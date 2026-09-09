@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ControlAr | JD Ar Condicionado</title>
+  <meta name="description" content="Protótipo académico do sistema ControlAr para gestão de clientes, ordens de serviço, agenda e manutenções recorrentes." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="site">
+    <header class="topbar">
+      <div class="container header">
+        <a class="brand" href="#inicio">
+          <span class="logoMark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+              <path d="M12 2v20M4.9 6.1l14.2 11.8M4.9 17.9 19.1 6.1M2 12h20"/>
+              <circle cx="12" cy="12" r="3.1"/>
+            </svg>
+          </span>
+          JD Ar Condicionado
+        </a>
+        <nav class="nav">
+          <a href="#inicio">Início</a>
+          <a href="#servicos">Serviços</a>
+          <a href="#manutencao">Manutenção</a>
+          <a href="#sobre">Sobre nós</a>
+          <a href="#contato">Contato</a>
+        </nav>
+        <div class="login-group">
+          <button class="btn btn-primary" onclick="openLogin('cliente')">Área do Cliente</button>
+          <button class="btn btn-soft" onclick="openLogin('tecnico')">Área do Técnico</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="inicio">
+        <div class="container hero-grid">
+          <div>
+            <span class="eyebrow">❄️ Conforto, cuidado e manutenção em dia</span>
+            <h1><span>JD Ar Condicionado:</span><br>seu conforto é nossa prioridade</h1>
+            <p>Instalação, limpeza, manutenção preventiva e corretiva com atendimento organizado. Com o ControlAr, cada cliente, equipamento, visita e próxima revisão ficam centralizados em um único lugar.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" onclick="openQuote()">Solicitar orçamento grátis</button>
+              <button class="btn btn-ghost" onclick="demoLogin('admin')">Conhecer o ControlAr</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="ac-unit">
+              <div class="ac-shell"></div>
+              <div class="air"><i></i><i></i><i></i></div>
+            </div>
+            <div class="floating float1">✓ Próxima revisão lembrada</div>
+            <div class="floating float2">📋 Histórico por equipamento</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="servicos">
+        <div class="container">
+          <div class="section-title">
+            <small>Serviços</small>
+            <h2>Atendimento do início ao pós-serviço</h2>
+            <p>Uma experiência simples para o cliente e uma operação mais organizada para a empresa.</p>
+          </div>
+          <div class="cards">
+            <article class="card">
+              <div class="icon">🛠️</div>
+              <h3>Instalação profissional</h3>
+              <p>Cadastro do equipamento, local instalado, capacidade, modelo, número de série, fotos e observações técnicas.</p>
+            </article>
+            <article class="card">
+              <div class="icon">🫧</div>
+              <h3>Limpeza & higienização</h3>
+              <p>Registro do serviço executado, técnico responsável e data recomendada para a próxima manutenção.</p>
+            </article>
+            <article class="card">
+              <div class="icon">🧰</div>
+              <h3>Manutenção preventiva e corretiva</h3>
+              <p>Alertas de recorrência, priorização de chamados e histórico completo das ordens de serviço do cliente.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="manutencao" style="background:#edf7fa">
+        <div class="container">
+          <div class="section-title">
+            <small>ControlAr</small>
+            <h2>Menos planilha, caderno e mensagens espalhadas</h2>
+            <p>O sistema foi estruturado para concentrar agenda, clientes, contratos, equipamentos, técnicos, ordens de serviço e próximas revisões.</p>
+          </div>
+          <div class="cards">
+            <article class="card"><div class="icon">📅</div><h3>Agenda centralizada</h3><p>Visão diária dos atendimentos, responsáveis, horários e status de execução.</p></article>
+            <article class="card"><div class="icon">🔔</div><h3>Alertas automáticos</h3><p>Manutenções próximas do vencimento aparecem em destaque para apoiar o contato e a revenda do serviço.</p></article>
+            <article class="card"><div class="icon">🗂️</div><h3>Histórico por cliente</h3><p>Consulte equipamentos, visitas, observações, fotos e serviços anteriores antes de um novo atendimento.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="sobre">
+        <div class="container about">
+          <div class="about-photo"><div class="tech">👨‍🔧❄️</div></div>
+          <div>
+            <small style="color:var(--blue);font-weight:900">QUEM SOMOS</small>
+            <h2>Experiência e qualidade em climatização</h2>
+            <p>A JD Ar Condicionado atende clientes residenciais, empresas e comércios. O ControlAr nasce para apoiar a rotina do negócio, reduzindo perda de informação e aumentando a visibilidade dos serviços recorrentes.</p>
+            <div class="checks">
+              <div class="check">✓ Cadastro de clientes</div><div class="check">✓ Gestão de técnicos</div>
+              <div class="check">✓ Equipamentos por local</div><div class="check">✓ Ordens de serviço</div>
+              <div class="check">✓ Revisões recorrentes</div><div class="check">✓ Histórico centralizado</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contato">
+        <div class="container quote-band">
+          <div>
+            <h2 style="margin:0 0 8px;font-size:32px">Precisa de atendimento?</h2>
+            <p style="margin:0">Envie seus dados e informe o tipo de serviço. O pedido entra na fila de atendimento e pode depois ser convertido em ordem de serviço.</p>
+          </div>
+          <button class="btn" onclick="openQuote()">Solicitar orçamento</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-grid">
+          <div>
+            <h3>JD Ar Condicionado • ControlAr</h3>
+            <p>Protótipo acadêmico desenvolvido no Projeto Integrador da UNIVESP para apoiar a gestão do ciclo de serviços recorrentes.</p>
+          </div>
+          <div>
+            <h4>Atalhos</h4>
+            <p><a href="#servicos">Serviços</a><br><a href="#sobre">Sobre nós</a><br><a href="#contato">Contato</a></p>
+          </div>
+          <div>
+            <h4>Acesso</h4>
+            <p><a href="#" onclick="openLogin('cliente')">Área do Cliente</a><br><a href="#" onclick="openLogin('tecnico')">Área do Técnico</a></p>
+          </div>
+        </div>
+        <div class="copy">Projeto Integrador • ControlAr • Protótipo navegável v4 • OS completa, evidências, assinatura e manutenção automática</div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="app">
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="side-brand"><span>❄️</span> ControlAr</div>
+        <div class="side-nav" id="adminNav">
+          <button class="active" data-view="dashboard">▦ Dashboard</button>
+          <button data-view="clientes">👥 Clientes</button>
+          <button data-view="agenda">📅 Agenda</button>
+          <button data-view="ordens">🧾 Ordens de Serviço</button>
+          <button data-view="equipamentos">❄️ Equipamentos</button>
+          <button data-view="alertas">🔔 Alertas</button>
+        </div>
+
+        <div class="side-nav hidden" id="clientNav">
+          <button class="active" data-view="cliente-home">⌂ Meu painel</button>
+          <button data-view="cliente-equipamentos">❄️ Meus equipamentos</button>
+          <button data-view="cliente-historico">🧾 Histórico</button>
+          <button data-view="cliente-solicitar">🛠️ Solicitar serviço</button>
+        </div>
+
+        <div class="side-nav hidden" id="techNav">
+          <button class="active" data-view="tecnico-home">⌂ Minha rota</button>
+          <button data-view="tecnico-os">🧰 Minhas OS</button>
+          <button data-view="tecnico-clientes">👤 Clientes do dia</button>
+          <button data-view="tecnico-fechamento">✅ Encerrar serviço</button>
+        </div>
+
+        <div class="side-bottom">
+          <button class="btn btn-ghost" style="width:100%" onclick="logout()">← Voltar ao site</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="main-head">
+          <div>
+            <h1 id="viewTitle">Dashboard</h1>
+            <p id="todayText"></p>
+          </div>
+          <div class="profile">
+            <div class="avatar" id="profileAvatar">OJ</div>
+            <div>
+              <b id="profileName">Oscar Junior</b><br>
+              <small id="profileRole" style="color:var(--muted)">Administrador</small>
+            </div>
+          </div>
+        </div>
+
+        <section class="view active" id="view-dashboard">
+          <div class="kpis">
+            <div class="kpi"><div class="label">ATENDIMENTOS HOJE</div><div class="num" id="kpiToday">4</div><div class="trend">↑ agenda organizada</div></div>
+            <div class="kpi"><div class="label">MANUTENÇÕES A VENCER</div><div class="num" id="kpiDue">6</div><div class="trend" style="color:var(--warn)">próximos 30 dias</div></div>
+            <div class="kpi"><div class="label">ORDENS EM ABERTO</div><div class="num" id="kpiOpen">3</div><div class="trend">acompanhar execução</div></div>
+            <div class="kpi"><div class="label">CLIENTES CADASTRADOS</div><div class="num" id="kpiClients">18</div><div class="trend">histórico centralizado</div></div>
+          </div>
+
+          <div class="admin-highlight">
+            <div class="revenue-card">
+              <small class="muted">VISÃO GERENCIAL</small>
+              <h2 style="margin:6px 0 0">Controle do ciclo de serviços</h2>
+              <div class="metric-row">
+                <div><span class="muted">Taxa de retorno</span><b>78%</b></div>
+                <div><span class="muted">OS concluídas</span><b>42</b></div>
+                <div><span class="muted">Preventivas</span><b>31</b></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Distribuição das OS</h3>
+              <div class="progress-list">
+                <div class="progress-item"><div class="progress-label"><span>Preventiva</span><span>62%</span></div><div class="progress-track"><i style="width:62%"></i></div></div>
+                <div class="progress-item"><div class="progress-label"><span>Corretiva</span><span>24%</span></div><div class="progress-track"><i style="width:24%"></i></div></div>
+                <div class="progress-item"><div class="progress-label"><span>Instalação</span><span>14%</span></div><div class="progress-track"><i style="width:14%"></i></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="panel">
+              <div class="toolbar"><h3>Agenda de hoje</h3><button class="btn btn-primary" onclick="openOS()">+ Nova OS</button></div>
+              <div class="timeline" id="timeline"></div>
+            </div>
+            <div class="panel">
+              <h3>Alertas de manutenção</h3>
+              <div id="dashboardAlerts"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-clientes">
+          <div class="panel">
+            <div class="toolbar">
+              <input class="search" id="clientSearch" placeholder="Buscar cliente, telefone ou cidade..." oninput="renderClients()">
+              <button class="btn btn-primary" onclick="openClient()">+ Cliente</button>
+            </div>
+            <div style="overflow:auto"><table><thead><tr><th>Cliente</th><th>Contato</th><th>Tipo</th><th>Último serviço</th><th>Próxima revisão</th></tr></thead><tbody id="clientsBody"></tbody></table></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-agenda">
+          <div class="panel">
+            <div class="toolbar"><h3>Agenda operacional</h3><button class="btn btn-primary" onclick="openOS()">+ Agendar atendimento</button></div>
+            <div id="agendaList"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-ordens">
+          <div class="panel">
+            <div class="toolbar"><h3>Ordens de serviço</h3><button class="btn btn-primary" onclick="openOS()">+ Nova OS</button></div>
+            <div id="osList"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-equipamentos">
+          <div class="panel"><h3>Equipamentos cadastrados</h3><div id="equipmentList"></div></div>
+        </section>
+
+        <section class="view" id="view-alertas">
+          <div class="panel">
+            <h3>Central de alertas</h3>
+            <p style="color:var(--muted)">Priorize clientes próximos da revisão e transforme o alerta em novo atendimento.</p>
+            <div id="allAlerts"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-cliente-home">
+          <div class="kpis">
+            <div class="kpi"><div class="label">PRÓXIMA MANUTENÇÃO</div><div class="num" style="font-size:22px">18/09/2026</div><div class="trend">em 10 dias</div></div>
+            <div class="kpi"><div class="label">EQUIPAMENTOS</div><div class="num">2</div><div class="trend">cadastrados</div></div>
+            <div class="kpi"><div class="label">SERVIÇOS REALIZADOS</div><div class="num">5</div><div class="trend">histórico disponível</div></div>
+            <div class="kpi"><div class="label">CHAMADOS EM ABERTO</div><div class="num">1</div><div class="trend">acompanhamento online</div></div>
+          </div>
+          <div class="grid2">
+            <div class="panel">
+              <h3>Meu próximo atendimento</h3>
+              <div class="event"><b>18/09/2026 • 09:00</b><span>Manutenção preventiva • Split 12.000 BTU • Quarto</span></div>
+              <div style="margin-top:14px"><button class="btn btn-primary" onclick="showClientRequest()">Solicitar novo atendimento</button></div>
+            </div>
+            <div class="panel">
+              <h3>Status do chamado</h3>
+              <div class="alert-box warn"><b>Chamado #CL-204</b><br><small>Aguardando confirmação de agenda</small></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-cliente-equipamentos">
+          <div class="panel">
+            <h3>Meus equipamentos</h3>
+            <div class="list-card"><div><b>Split Samsung 12.000 BTU</b><p>Quarto • Série SS12-781 • Última higienização: 18/03/2026</p></div><span class="badge ok">Em dia</span></div>
+            <div class="list-card"><div><b>Split LG 9.000 BTU</b><p>Sala • Série LG09-442 • Próxima revisão: 22/10/2026</p></div><span class="badge info">Monitorado</span></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-cliente-historico">
+          <div class="panel">
+            <h3>Histórico de serviços</h3>
+            <div style="overflow:auto">
+              <table>
+                <thead><tr><th>Data</th><th>Serviço</th><th>Equipamento</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>18/03/2026</td><td>Higienização</td><td>Samsung 12.000 BTU</td><td><span class="badge ok">Concluído</span></td></tr>
+                  <tr><td>12/11/2025</td><td>Manutenção preventiva</td><td>LG 9.000 BTU</td><td><span class="badge ok">Concluído</span></td></tr>
+                  <tr><td>03/05/2025</td><td>Instalação</td><td>Samsung 12.000 BTU</td><td><span class="badge ok">Concluído</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-cliente-solicitar">
+          <div class="panel">
+            <h3>Solicitar atendimento</h3>
+            <div class="form-grid">
+              <div class="field"><label>Equipamento</label><select id="clientReqEquip"><option>Samsung 12.000 BTU - Quarto</option><option>LG 9.000 BTU - Sala</option></select></div>
+              <div class="field"><label>Tipo de serviço</label><select id="clientReqType"><option>Manutenção preventiva</option><option>Manutenção corretiva</option><option>Higienização</option><option>Visita técnica</option></select></div>
+              <div class="field full"><label>Descrição</label><textarea id="clientReqNote" rows="4" placeholder="Explique o que está acontecendo..."></textarea></div>
+            </div>
+            <div class="actions"><button class="btn btn-primary" onclick="submitClientRequest()">Enviar solicitação</button></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tecnico-home">
+          <div class="tech-status-card">
+            <small class="muted">ATENDIMENTO ATUAL</small>
+            <h2 style="margin:6px 0 4px">OS-1048 • Mercado Central</h2>
+            <div class="muted">Manutenção preventiva • Itu • 08:30</div>
+            <div class="tech-progress"><i id="techProgressBar"></i></div>
+            <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px">
+              <span id="techStatusText">Aguardando início</span><span id="techElapsed">00:00</span>
+            </div>
+          </div>
+
+          <div class="tech-mobile-actions">
+            <button class="tech-action primary" id="startServiceBtn" onclick="toggleService()"><span>▶️</span>Iniciar atendimento<small>Registra início e horário</small></button>
+            <button class="tech-action" onclick="openCamera()"><span>📷</span>Tirar foto<small>Anexe evidência do serviço</small></button>
+            <button class="tech-action" onclick="openMap()"><span>📍</span>Abrir localização<small>Traçar rota até o cliente</small></button>
+            <button class="tech-action success" onclick="goFinishService()"><span>✅</span>Finalizar serviço<small>Relatório e próxima revisão</small></button>
+          </div>
+          <input id="techPhotoInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="previewTechPhoto(event)">
+          <img id="techPhotoPreview" class="photo-preview" alt="Prévia da foto anexada">
+
+          <div class="kpis" style="margin-top:18px">
+            <div class="kpi"><div class="label">OS DE HOJE</div><div class="num">3</div><div class="trend">rota do técnico</div></div>
+            <div class="kpi"><div class="label">CONCLUÍDAS</div><div class="num">1</div><div class="trend">33% do dia</div></div>
+            <div class="kpi"><div class="label">EM ANDAMENTO</div><div class="num" id="techInProgress">0</div><div class="trend" style="color:var(--warn)">atendimento atual</div></div>
+            <div class="kpi"><div class="label">PENDENTES</div><div class="num">2</div><div class="trend">próximos clientes</div></div>
+          </div>
+
+          <div class="grid2">
+            <div class="panel">
+              <h3>Minha rota de hoje</h3>
+              <div class="timeline">
+                <div class="event"><b>08:30 • Mercado Central</b><span>Preventiva • Itu • <span id="routeCurrentStatus">Aguardando início</span></span></div>
+                <div class="event"><b>11:00 • Residencial Ana Paula</b><span>Higienização • Cabreúva • Agendada</span></div>
+                <div class="event"><b>15:30 • Clínica Vida</b><span>Corretiva • Tatuí • Agendada</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h3>Checklist rápido</h3>
+              <label class="check" style="display:block;margin-bottom:8px"><input type="checkbox"> Conferir equipamento e número de série</label>
+              <label class="check" style="display:block;margin-bottom:8px"><input type="checkbox"> Registrar condição inicial</label>
+              <label class="check" style="display:block;margin-bottom:8px"><input type="checkbox"> Executar serviço e testes</label>
+              <label class="check" style="display:block"><input type="checkbox"> Orientar cliente e registrar recomendação</label>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tecnico-os">
+          <div class="panel">
+            <h3>Minhas ordens de serviço</h3>
+            <div class="list-card"><div><b>OS-1048 • Mercado Central</b><p>08:30 • Manutenção preventiva • Itu</p></div><span class="badge warn">Em andamento</span></div>
+            <div class="list-card"><div><b>OS-1054 • Ana Paula</b><p>11:00 • Higienização • Cabreúva</p></div><span class="badge info">Agendada</span></div>
+            <div class="list-card"><div><b>OS-1057 • Clínica Vida</b><p>15:30 • Manutenção corretiva • Tatuí</p></div><span class="badge info">Agendada</span></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tecnico-clientes">
+          <div class="panel">
+            <h3>Clientes do dia</h3>
+            <div class="list-card"><div><b>Mercado Central</b><p>Itu • (15) 99910-2233 • Split 24.000 BTU</p></div><button class="btn btn-ghost" onclick="showToast('Dados do cliente exibidos no protótipo.')">Ver detalhes</button></div>
+            <div class="list-card"><div><b>Ana Paula</b><p>Cabreúva • (15) 99745-2210 • Split 12.000 BTU</p></div><button class="btn btn-ghost" onclick="showToast('Dados do cliente exibidos no protótipo.')">Ver detalhes</button></div>
+            <div class="list-card"><div><b>Clínica Vida</b><p>Tatuí • (15) 99877-4321 • Split 18.000 BTU</p></div><button class="btn btn-ghost" onclick="showToast('Dados do cliente exibidos no protótipo.')">Ver detalhes</button></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-tecnico-fechamento">
+          <div class="panel">
+            <div class="toolbar">
+              <div>
+                <h3>Encerramento da OS</h3>
+                <p style="margin:4px 0;color:var(--muted)">Fluxo completo: evidências, peças, assinatura e próxima manutenção.</p>
+              </div>
+              <span class="badge warn">OS-1048</span>
+            </div>
+
+            <div class="os-wizard">
+              <div class="os-step active" id="step1">1. Serviço</div>
+              <div class="os-step" id="step2">2. Evidências</div>
+              <div class="os-step" id="step3">3. Peças</div>
+              <div class="os-step" id="step4">4. Assinatura</div>
+            </div>
+
+            <div id="closeStep1">
+              <div class="form-grid">
+                <div class="field"><label>Ordem de serviço</label><select id="closeOS"><option>OS-1048 • Mercado Central</option><option>OS-1054 • Ana Paula</option><option>OS-1057 • Clínica Vida</option></select></div>
+                <div class="field"><label>Resultado</label><select id="closeResult"><option>Serviço concluído</option><option>Necessita retorno</option><option>Aguardando peça</option></select></div>
+                <div class="field full"><label>Relatório técnico</label><textarea id="closeReport" rows="5" placeholder="Descreva o serviço executado, medições, condições encontradas e recomendações..."></textarea></div>
+                <div class="field"><label>Periodicidade da próxima manutenção</label>
+                  <select id="maintenancePeriod" onchange="calculateNextMaintenance()">
+                    <option value="3">3 meses</option><option value="6" selected>6 meses</option><option value="12">12 meses</option>
+                  </select>
+                </div>
+                <div class="field"><label>Próxima manutenção sugerida</label><input type="date" id="nextMaintenance"></div>
+                <div class="field"><label>Horas trabalhadas</label><input type="number" id="workedHours" min="0" step="0.5" value="1.5"></div>
+                <div class="field"><label>Condição final</label><select id="finalCondition"><option>Equipamento operando normalmente</option><option>Operando com recomendação</option><option>Equipamento parado</option></select></div>
+              </div>
+              <div class="actions"><button class="btn btn-primary" onclick="closeWizard(2)">Próximo: evidências →</button></div>
+            </div>
+
+            <div id="closeStep2" class="hidden">
+              <div class="photo-grid">
+                <div>
+                  <h4>Foto antes do serviço</h4>
+                  <label class="photo-box" for="beforePhoto">
+                    <div id="beforePlaceholder"><div style="font-size:34px">📷</div><b>Adicionar foto</b><br><small>Estado inicial do equipamento</small></div>
+                    <img id="beforePreview" class="hidden" alt="Foto antes do serviço">
+                  </label>
+                  <input id="beforePhoto" type="file" accept="image/*" capture="environment" class="hidden" onchange="previewClosurePhoto(event,'beforePreview','beforePlaceholder')">
+                </div>
+                <div>
+                  <h4>Foto depois do serviço</h4>
+                  <label class="photo-box" for="afterPhoto">
+                    <div id="afterPlaceholder"><div style="font-size:34px">📷</div><b>Adicionar foto</b><br><small>Resultado após execução</small></div>
+                    <img id="afterPreview" class="hidden" alt="Foto depois do serviço">
+                  </label>
+                  <input id="afterPhoto" type="file" accept="image/*" capture="environment" class="hidden" onchange="previewClosurePhoto(event,'afterPreview','afterPlaceholder')">
+                </div>
+              </div>
+              <div class="actions"><button class="btn btn-ghost" onclick="closeWizard(1)">← Voltar</button><button class="btn btn-primary" onclick="closeWizard(3)">Próximo: peças →</button></div>
+            </div>
+
+            <div id="closeStep3" class="hidden">
+              <div class="toolbar"><h4 style="margin:0">Peças e materiais utilizados</h4><button class="btn btn-soft" onclick="addPartRow()">+ Adicionar item</button></div>
+              <div style="overflow:auto">
+                <table class="parts-table">
+                  <thead><tr><th>Peça / material</th><th>Quantidade</th><th>Observação</th><th></th></tr></thead>
+                  <tbody id="partsBody">
+                    <tr>
+                      <td><input placeholder="Ex.: capacitor 35µF"></td>
+                      <td><input type="number" min="0" step="1" value="1"></td>
+                      <td><input placeholder="Opcional"></td>
+                      <td><button class="btn btn-ghost" onclick="removePartRow(this)">×</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="actions"><button class="btn btn-ghost" onclick="closeWizard(2)">← Voltar</button><button class="btn btn-primary" onclick="closeWizard(4)">Próximo: assinatura →</button></div>
+            </div>
+
+            <div id="closeStep4" class="hidden">
+              <div class="form-grid">
+                <div class="field full"><label>Nome de quem acompanhou o serviço</label><input id="signerName" placeholder="Nome do cliente / responsável"></div>
+                <div class="field full">
+                  <label>Assinatura do cliente</label>
+                  <div class="signature-pad"><canvas id="signatureCanvas"></canvas></div>
+                  <div style="margin-top:8px"><button class="btn btn-ghost" onclick="clearSignature()">Limpar assinatura</button></div>
+                </div>
+              </div>
+
+              <div class="summary-box" style="margin-top:18px">
+                <h4 style="margin-top:0">Resumo do fechamento</h4>
+                <p><b>OS:</b> OS-1048 • Mercado Central</p>
+                <p><b>Próxima manutenção:</b> <span id="summaryNextMaintenance">—</span></p>
+                <p><b>Regra automática:</b> ao concluir a OS, o sistema cria um alerta futuro para nova manutenção.</p>
+              </div>
+
+              <div class="actions"><button class="btn btn-ghost" onclick="closeWizard(3)">← Voltar</button><button class="btn btn-primary" onclick="finishCompleteOS()">Finalizar OS e programar retorno</button></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="mobile-tech-footer hidden" id="mobileTechFooter">
+      <button onclick="switchView('tecnico-home','Minha rota')"><b>⌂</b>Início</button>
+      <button onclick="switchView('tecnico-os','Minhas ordens de serviço')"><b>🧰</b>OS</button>
+      <button onclick="switchView('tecnico-clientes','Clientes do dia')"><b>👤</b>Clientes</button>
+      <button onclick="switchView('tecnico-fechamento','Encerrar serviço')"><b>✅</b>Finalizar</button>
+    </div>
+    <button class="fab" id="adminFab" title="Nova ordem de serviço" onclick="openOS()">+</button>
+  </div>
+
+  <div class="modal" id="loginModal">
+    <div class="modal-box">
+      <div class="modal-head"><h2 id="loginTitle">Entrar no ControlAr</h2><button class="close" onclick="closeModal('loginModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field full"><label>E-mail</label><input value="demo@controlar.com"></div>
+        <div class="field full"><label>Senha</label><input type="password" value="123456"></div>
+      </div>
+      <div class="actions"><button class="btn btn-ghost" onclick="closeModal('loginModal')">Cancelar</button><button class="btn btn-primary" onclick="demoLogin(pendingRole)">Entrar no protótipo</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="quoteModal">
+    <div class="modal-box">
+      <div class="modal-head"><h2>Solicitar orçamento</h2><button class="close" onclick="closeModal('quoteModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label>Nome</label><input id="qName" placeholder="Seu nome"></div>
+        <div class="field"><label>Telefone / WhatsApp</label><input id="qPhone" placeholder="(15) 99999-9999"></div>
+        <div class="field"><label>Serviço</label><select id="qService"><option>Instalação</option><option>Limpeza / higienização</option><option>Manutenção preventiva</option><option>Manutenção corretiva</option><option>Orçamento técnico</option></select></div>
+        <div class="field"><label>Cidade</label><input id="qCity" placeholder="Cidade"></div>
+        <div class="field full"><label>Descrição</label><textarea id="qNotes" rows="4" placeholder="Descreva o equipamento e o que precisa..."></textarea></div>
+      </div>
+      <div class="actions"><button class="btn btn-ghost" onclick="closeModal('quoteModal')">Cancelar</button><button class="btn btn-primary" onclick="sendQuote()">Enviar solicitação</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="clientModal">
+    <div class="modal-box">
+      <div class="modal-head"><h2>Novo cliente</h2><button class="close" onclick="closeModal('clientModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label>Nome / Razão social</label><input id="cName"></div>
+        <div class="field"><label>Telefone</label><input id="cPhone"></div>
+        <div class="field"><label>Tipo</label><select id="cType"><option>Residencial</option><option>Empresa</option><option>Comércio</option></select></div>
+        <div class="field"><label>Cidade</label><input id="cCity"></div>
+        <div class="field"><label>Último serviço</label><input type="date" id="cLast"></div>
+        <div class="field"><label>Próxima revisão</label><input type="date" id="cNext"></div>
+      </div>
+      <div class="actions"><button class="btn btn-ghost" onclick="closeModal('clientModal')">Cancelar</button><button class="btn btn-primary" onclick="saveClient()">Salvar cliente</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="osModal">
+    <div class="modal-box">
+      <div class="modal-head"><h2>Nova ordem de serviço</h2><button class="close" onclick="closeModal('osModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label>Cliente</label><input id="osClient" placeholder="Nome do cliente"></div>
+        <div class="field"><label>Serviço</label><select id="osService"><option>Manutenção preventiva</option><option>Manutenção corretiva</option><option>Instalação</option><option>Higienização</option></select></div>
+        <div class="field"><label>Data</label><input type="date" id="osDate"></div>
+        <div class="field"><label>Hora</label><input type="time" id="osTime" value="09:00"></div>
+        <div class="field"><label>Técnico</label><select id="osTech"><option>Técnico 01</option><option>Técnico 02</option><option>Oscar Junior</option></select></div>
+        <div class="field"><label>Status</label><select id="osStatus"><option>Agendada</option><option>Em andamento</option><option>Concluída</option></select></div>
+        <div class="field full"><label>Observações</label><textarea id="osNotes" rows="3"></textarea></div>
+      </div>
+      <div class="actions"><button class="btn btn-ghost" onclick="closeModal('osModal')">Cancelar</button><button class="btn btn-primary" onclick="saveOS()">Criar OS</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const seedClients = [
+      { name: 'Mercado Central', phone: '(15) 99910-2233', type: 'Comércio', city: 'Itu', last: '2026-03-12', next: '2026-09-12' },
+      { name: 'Clínica Vida', phone: '(15) 99877-4321', type: 'Empresa', city: 'Tatuí', last: '2026-04-08', next: '2026-10-08' },
+      { name: 'Carlos Henrique', phone: '(15) 99750-1180', type: 'Residencial', city: 'Cabreúva', last: '2026-03-18', next: '2026-09-18' },
+      { name: 'Padaria Avenida', phone: '(15) 99620-7840', type: 'Comércio', city: 'Porangaba', last: '2026-02-28', next: '2026-09-10' }
+    ];
+
+    const seedOS = [
+      { id: 'OS-1048', client: 'Mercado Central', service: 'Manutenção preventiva', date: '2026-09-08', time: '08:30', tech: 'Técnico 01', status: 'Em andamento' },
+      { id: 'OS-1049', client: 'Ana Paula', service: 'Higienização', date: '2026-09-08', time: '10:30', tech: 'Técnico 02', status: 'Agendada' },
+      { id: 'OS-1050', client: 'Clínica Vida', service: 'Manutenção corretiva', date: '2026-09-08', time: '14:00', tech: 'Oscar Junior', status: 'Agendada' },
+      { id: 'OS-1051', client: 'Escritório Alfa', service: 'Instalação', date: '2026-09-08', time: '16:30', tech: 'Técnico 01', status: 'Agendada' }
+    ];
+
+    const equipments = [
+      { client: 'Mercado Central', item: 'Split 24.000 BTU', brand: 'LG', serial: 'LG24-A81', location: 'Salão principal' },
+      { client: 'Clínica Vida', item: 'Split 18.000 BTU', brand: 'Daikin', serial: 'DK18-992', location: 'Recepção' },
+      { client: 'Carlos Henrique', item: 'Split 12.000 BTU', brand: 'Samsung', serial: 'SS12-781', location: 'Quarto' }
+    ];
+
+    let clients = JSON.parse(localStorage.getItem('controlar_clients') || 'null') || seedClients;
+    let orders = JSON.parse(localStorage.getItem('controlar_orders') || 'null') || seedOS;
+    let pendingRole = 'admin';
+    let techServiceStarted = false;
+    let techStartTime = null;
+    let techTimer = null;
+
+    function fmtDate(v) {
+      if (!v) return '-';
+      const [y, m, d] = v.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function showToast(text) {
+      const el = document.getElementById('toast');
+      el.textContent = text;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 2600);
+    }
+
+    function openLogin(role) {
+      pendingRole = role;
+      document.getElementById('loginTitle').textContent = role === 'tecnico' ? 'Área do Técnico' : 'Área do Cliente';
+      document.getElementById('loginModal').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function openQuote() {
+      document.getElementById('quoteModal').classList.add('open');
+    }
+
+    function openClient() {
+      document.getElementById('clientModal').classList.add('open');
+    }
+
+    function openOS() {
+      const dateField = document.getElementById('osDate');
+      if (dateField) dateField.value = new Date().toISOString().slice(0, 10);
+      document.getElementById('osModal').classList.add('open');
+    }
+
+    function demoLogin(role) {
+      closeModal('loginModal');
+      const accessRole = role || pendingRole || 'admin';
+      document.getElementById('site').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      applyRole(accessRole);
+      renderAll();
+    }
+
+    function logout() {
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('site').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+
+    function sendQuote() {
+      const name = document.getElementById('qName').value.trim();
+      if (!name) {
+        showToast('Informe seu nome para continuar.');
+        return;
+      }
+      closeModal('quoteModal');
+      showToast('Solicitação registrada no protótipo!');
+    }
+
+    function saveClient() {
+      const name = document.getElementById('cName').value.trim();
+      const cPhone = document.getElementById('cPhone');
+      const cType = document.getElementById('cType');
+      const cCity = document.getElementById('cCity');
+      const cLast = document.getElementById('cLast');
+      const cNext = document.getElementById('cNext');
+
+      if (!name) {
+        showToast('Informe o nome do cliente.');
+        return;
+      }
+
+      clients.push({
+        name,
+        phone: cPhone.value,
+        type: cType.value,
+        city: cCity.value,
+        last: cLast.value,
+        next: cNext.value
+      });
+
+      localStorage.setItem('controlar_clients', JSON.stringify(clients));
+      closeModal('clientModal');
+      renderAll();
+      showToast('Cliente cadastrado.');
+    }
+
+    function saveOS() {
+      const osClient = document.getElementById('osClient');
+      const osService = document.getElementById('osService');
+      const osDate = document.getElementById('osDate');
+      const osTime = document.getElementById('osTime');
+      const osTech = document.getElementById('osTech');
+      const osStatus = document.getElementById('osStatus');
+
+      if (!osClient.value.trim()) {
+        showToast('Informe o cliente.');
+        return;
+      }
+
+      const id = 'OS-' + String(1052 + orders.length).padStart(4, '0');
+      orders.push({
+        id,
+        client: osClient.value.trim(),
+        service: osService.value,
+        date: osDate.value,
+        time: osTime.value,
+        tech: osTech.value,
+        status: osStatus.value
+      });
+
+      localStorage.setItem('controlar_orders', JSON.stringify(orders));
+      closeModal('osModal');
+      renderAll();
+      showToast(`${id} criada com sucesso.`);
+    }
+
+    function statusBadge(s) {
+      const c = s === 'Concluída' ? 'ok' : s === 'Em andamento' ? 'warn' : 'info';
+      return `<span class="badge ${c}">${s}</span>`;
+    }
+
+    function renderClients() {
+      const q = (document.getElementById('clientSearch')?.value || '').toLowerCase();
+      const rows = clients.filter(c => Object.values(c).join(' ').toLowerCase().includes(q)).map(c => `
+        <tr>
+          <td><b>${c.name}</b><br><small>${c.city || ''}</small></td>
+          <td>${c.phone || '-'}</td>
+          <td><span class="badge info">${c.type}</span></td>
+          <td>${fmtDate(c.last)}</td>
+          <td>${fmtDate(c.next)}</td>
+        </tr>
+      `).join('');
+
+      const body = document.getElementById('clientsBody');
+      if (body) body.innerHTML = rows || '<tr><td colspan="5">Nenhum cliente encontrado.</td></tr>';
+    }
+
+    function renderAgenda() {
+      const agendaList = document.getElementById('agendaList');
+      if (!agendaList) return;
+
+      agendaList.innerHTML = orders.map(os => `
+        <div class="list-card">
+          <div><b>${os.id} • ${os.client}</b><p>${os.date} • ${os.time} • ${os.service}</p></div>
+          <span class="badge info">${os.status}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderOSList() {
+      const osList = document.getElementById('osList');
+      if (!osList) return;
+
+      osList.innerHTML = orders.map(os => `
+        <div class="list-card">
+          <div><b>${os.id} • ${os.client}</b><p>${os.service} • ${os.tech}</p></div>
+          ${statusBadge(os.status)}
+        </div>
+      `).join('');
+    }
+
+    function renderEquipmentList() {
+      const equipmentList = document.getElementById('equipmentList');
+      if (!equipmentList) return;
+
+      equipmentList.innerHTML = equipments.map(item => `
+        <div class="list-card">
+          <div><b>${item.item}</b><p>${item.client} • ${item.location}</p></div>
+          <span class="badge info">${item.brand}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderAlerts() {
+      const alerts = [
+        { title: 'Mercado Central', message: 'Revisão vence em 4 dias', type: 'warn' },
+        { title: 'Carlos Henrique', message: 'Manutenção agendada para 18/09', type: 'warn' },
+        { title: 'Clínica Vida', message: 'Troca de filtro pendente', type: 'danger' }
+      ];
+      const dashboardAlerts = document.getElementById('dashboardAlerts');
+      const allAlerts = document.getElementById('allAlerts');
+      const html = alerts.map(item => `
+        <div class="alert-box ${item.type}">
+          <b>${item.title}</b><br>
+          <small>${item.message}</small>
+        </div>
+      `).join('');
+
+      if (dashboardAlerts) dashboardAlerts.innerHTML = html;
+      if (allAlerts) allAlerts.innerHTML = html;
+    }
+
+    function renderTimeline() {
+      const timeline = document.getElementById('timeline');
+      if (!timeline) return;
+
+      timeline.innerHTML = orders.slice(0, 4).map(os => `
+        <div class="event"><b>${os.time} • ${os.client}</b><span>${os.service} • ${os.tech}</span></div>
+      `).join('');
+    }
+
+    function applyRole(role) {
+      const app = document.getElementById('app');
+      const adminNav = document.getElementById('adminNav');
+      const clientNav = document.getElementById('clientNav');
+      const techNav = document.getElementById('techNav');
+      const profileName = document.getElementById('profileName');
+      const profileRole = document.getElementById('profileRole');
+      const profileAvatar = document.getElementById('profileAvatar');
+
+      adminNav.classList.add('hidden');
+      clientNav.classList.add('hidden');
+      techNav.classList.add('hidden');
+
+      if (role === 'cliente') {
+        clientNav.classList.remove('hidden');
+        app.classList.remove('tech-role');
+        profileName.textContent = 'Maria Silva';
+        profileRole.textContent = 'Cliente';
+        profileAvatar.textContent = 'MS';
+        switchView('cliente-home', 'Meu painel');
+      } else if (role === 'tecnico') {
+        techNav.classList.remove('hidden');
+        app.classList.add('tech-role');
+        profileName.textContent = 'Oscar Junior';
+        profileRole.textContent = 'Técnico';
+        profileAvatar.textContent = 'OJ';
+        switchView('tecnico-home', 'Minha rota');
+      } else {
+        adminNav.classList.remove('hidden');
+        app.classList.remove('tech-role');
+        profileName.textContent = 'Oscar Junior';
+        profileRole.textContent = 'Administrador';
+        profileAvatar.textContent = 'OJ';
+        switchView('dashboard', 'Dashboard');
+      }
+    }
+
+    function switchView(view, title) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      const target = document.getElementById('view-' + view);
+      if (target) target.classList.add('active');
+      const header = document.getElementById('viewTitle');
+      if (header) header.textContent = title;
+      const footer = document.getElementById('mobileTechFooter');
+      if (footer && view.startsWith('tecnico')) footer.classList.remove('hidden');
+      else if (footer) footer.classList.add('hidden');
+    }
+
+    function renderAll() {
+      renderClients();
+      renderAgenda();
+      renderOSList();
+      renderEquipmentList();
+      renderAlerts();
+      renderTimeline();
+      const today = new Date();
+      const todayText = document.getElementById('todayText');
+      if (todayText) todayText.textContent = today.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function showClientRequest() {
+      switchView('cliente-solicitar', 'Solicitar serviço');
+      showToast('Preencha os dados do atendimento.');
+    }
+
+    function submitClientRequest() {
+      const equip = document.getElementById('clientReqEquip').value;
+      const type = document.getElementById('clientReqType').value;
+      showToast(`Solicitação enviada para ${equip} (${type}).`);
+      switchView('cliente-home', 'Meu painel');
+    }
+
+    function openCamera() {
+      document.getElementById('techPhotoInput').click();
+    }
+
+    function previewTechPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const preview = document.getElementById('techPhotoPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+      showToast('Foto anexada ao atendimento.');
+    }
+
+    function openMap() {
+      showToast('Mapa da rota do técnico em protótipo.');
+    }
+
+    function toggleService() {
+      const btn = document.getElementById('startServiceBtn');
+      const statusText = document.getElementById('techStatusText');
+      const routeCurrentStatus = document.getElementById('routeCurrentStatus');
+      const progress = document.getElementById('techProgressBar');
+
+      if (!techServiceStarted) {
+        techServiceStarted = true;
+        techStartTime = Date.now();
+        btn.innerHTML = '<span>⏸️</span>Em atendimento<small>Tempo de execução em andamento</small>';
+        statusText.textContent = 'Em execução';
+        routeCurrentStatus.textContent = 'Em execução';
+        progress.style.width = '33%';
+        techTimer = setInterval(() => {
+          if (!techStartTime) return;
+          const diffMs = Date.now() - techStartTime;
+          const totalSec = Math.floor(diffMs / 1000);
+          const minutes = String(Math.floor(totalSec / 60)).padStart(2, '0');
+          const seconds = String(totalSec % 60).padStart(2, '0');
+          document.getElementById('techElapsed').textContent = `${minutes}:${seconds}`;
+        }, 1000);
+      } else {
+        techServiceStarted = false;
+        btn.innerHTML = '<span>▶️</span>Iniciar atendimento<small>Registra início e horário</small>';
+        statusText.textContent = 'Pausado';
+        routeCurrentStatus.textContent = 'Pausado';
+        clearInterval(techTimer);
+      }
+    }
+
+    function goFinishService() {
+      switchView('tecnico-fechamento', 'Encerrar serviço');
+      calculateNextMaintenance();
+    }
+
+    function calculateNextMaintenance() {
+      const value = Number(document.getElementById('maintenancePeriod')?.value || 6);
+      const next = document.getElementById('nextMaintenance');
+      const date = new Date();
+      date.setMonth(date.getMonth() + value);
+      const iso = date.toISOString().slice(0, 10);
+      if (next) next.value = iso;
+      const summary = document.getElementById('summaryNextMaintenance');
+      if (summary) summary.textContent = fmtDate(iso);
+    }
+
+    function closeWizard(step) {
+      const step1 = document.getElementById('closeStep1');
+      const step2 = document.getElementById('closeStep2');
+      const step3 = document.getElementById('closeStep3');
+      const step4 = document.getElementById('closeStep4');
+      const stepIndicators = ['step1', 'step2', 'step3', 'step4'];
+
+      [step1, step2, step3, step4].forEach((el, index) => {
+        const isVisible = index + 1 === step;
+        if (el) el.classList.toggle('hidden', !isVisible);
+        const indicator = document.getElementById(stepIndicators[index]);
+        if (indicator) {
+          indicator.classList.toggle('active', isVisible);
+          indicator.classList.toggle('done', index + 1 < step);
+        }
+      });
+    }
+
+    function previewClosurePhoto(event, previewId, placeholderId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const preview = document.getElementById(previewId);
+        const placeholder = document.getElementById(placeholderId);
+        preview.src = e.target.result;
+        preview.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addPartRow() {
+      const tbody = document.getElementById('partsBody');
+      if (!tbody) return;
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input placeholder="Ex.: capacitor 35µF"></td>
+        <td><input type="number" min="0" step="1" value="1"></td>
+        <td><input placeholder="Opcional"></td>
+        <td><button class="btn btn-ghost" onclick="removePartRow(this)">×</button></td>
+      `;
+      tbody.appendChild(row);
+    }
+
+    function removePartRow(button) {
+      const row = button.closest('tr');
+      if (row) row.remove();
+    }
+
+    function clearSignature() {
+      const canvas = document.getElementById('signatureCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function initSignaturePad() {
+      const canvas = document.getElementById('signatureCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#102f42';
+
+      let drawing = false;
+      function getPos(event) {
+        const bounds = canvas.getBoundingClientRect();
+        return {
+          x: event.clientX - bounds.left,
+          y: event.clientY - bounds.top
+        };
+      }
+      canvas.addEventListener('pointerdown', e => {
+        drawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      });
+      canvas.addEventListener('pointermove', e => {
+        if (!drawing) return;
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      });
+      canvas.addEventListener('pointerup', () => drawing = false);
+      canvas.addEventListener('pointerleave', () => drawing = false);
+    }
+
+    function finishCompleteOS() {
+      const signer = document.getElementById('signerName').value.trim();
+      if (!signer) {
+        showToast('Informe o nome do responsável pela assinatura.');
+        return;
+      }
+      showToast('OS finalizada e retorno programado.');
+      switchView('tecnico-home', 'Minha rota');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+      calculateNextMaintenance();
+      initSignaturePad();
+      document.getElementById('todayText').textContent = new Date().toLocaleDateString('pt-BR', {
+        weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+      });
+    });
+  </script>
+</body>
+</html>

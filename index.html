@@ -154,6 +154,7 @@
         <div class="side-nav" id="adminNav">
           <button class="active" data-view="dashboard">▦ Dashboard</button>
           <button data-view="clientes">👥 Clientes</button>
+          <button data-view="tecnicos">🧑‍🔧 Técnicos</button>
           <button data-view="agenda">📅 Agenda</button>
           <button data-view="ordens">🧾 Ordens de Serviço</button>
           <button data-view="equipamentos">❄️ Equipamentos</button>
@@ -244,6 +245,16 @@
           </div>
         </section>
 
+        <section class="view" id="view-tecnicos">
+          <div class="panel">
+            <div class="toolbar">
+              <h3>Técnicos cadastrados</h3>
+              <button class="btn btn-primary" onclick="openTechnician()">+ Técnico</button>
+            </div>
+            <div id="techniciansList"></div>
+          </div>
+        </section>
+
         <section class="view" id="view-agenda">
           <div class="panel">
             <div class="toolbar"><h3>Agenda operacional</h3><button class="btn btn-primary" onclick="openOS()">+ Agendar atendimento</button></div>
@@ -329,8 +340,8 @@
         <section class="view" id="view-tecnico-home">
           <div class="tech-status-card">
             <small class="muted">ATENDIMENTO ATUAL</small>
-            <h2 style="margin:6px 0 4px">OS-1048 • Mercado Central</h2>
-            <div class="muted">Manutenção preventiva • Itu • 08:30</div>
+            <h2 style="margin:6px 0 4px" id="technicianCurrentTitle">Nenhuma OS atribuída</h2>
+            <div class="muted" id="technicianCurrentDetails">As novas ordens atribuídas a você aparecerão aqui.</div>
             <div class="tech-progress"><i id="techProgressBar"></i></div>
             <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px">
               <span id="techStatusText">Aguardando início</span><span id="techElapsed">00:00</span>
@@ -356,11 +367,7 @@
           <div class="grid2">
             <div class="panel">
               <h3>Minha rota de hoje</h3>
-              <div class="timeline">
-                <div class="event"><b>08:30 • Mercado Central</b><span>Preventiva • Itu • <span id="routeCurrentStatus">Aguardando início</span></span></div>
-                <div class="event"><b>11:00 • Residencial Ana Paula</b><span>Higienização • Cabreúva • Agendada</span></div>
-                <div class="event"><b>15:30 • Clínica Vida</b><span>Corretiva • Tatuí • Agendada</span></div>
-              </div>
+              <div class="timeline" id="technicianRoute"></div>
             </div>
             <div class="panel">
               <h3>Checklist rápido</h3>
@@ -375,9 +382,7 @@
         <section class="view" id="view-tecnico-os">
           <div class="panel">
             <h3>Minhas ordens de serviço</h3>
-            <div class="list-card"><div><b>OS-1048 • Mercado Central</b><p>08:30 • Manutenção preventiva • Itu</p></div><span class="badge warn">Em andamento</span></div>
-            <div class="list-card"><div><b>OS-1054 • Ana Paula</b><p>11:00 • Higienização • Cabreúva</p></div><span class="badge info">Agendada</span></div>
-            <div class="list-card"><div><b>OS-1057 • Clínica Vida</b><p>15:30 • Manutenção corretiva • Tatuí</p></div><span class="badge info">Agendada</span></div>
+            <div id="technicianOrders"></div>
           </div>
         </section>
 
@@ -503,6 +508,7 @@
       <div class="form-grid">
         <div class="field full"><label>E-mail</label><input value="demo@controlar.com"></div>
         <div class="field full"><label>Senha</label><input type="password" value="123456"></div>
+        <div class="field full hidden" id="technicianLoginField"><label>Técnico</label><select id="technicianLogin"></select></div>
       </div>
       <div class="actions"><button class="btn btn-ghost" onclick="closeModal('loginModal')">Cancelar</button><button class="btn btn-primary" onclick="demoLogin(pendingRole)">Entrar no protótipo</button></div>
     </div>
@@ -534,6 +540,19 @@
         <div class="field"><label>Próxima revisão</label><input type="date" id="cNext"></div>
       </div>
       <div class="actions"><button class="btn btn-ghost" onclick="closeModal('clientModal')">Cancelar</button><button class="btn btn-primary" onclick="saveClient()">Salvar cliente</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="technicianModal">
+    <div class="modal-box">
+      <div class="modal-head"><h2>Novo técnico</h2><button class="close" onclick="closeModal('technicianModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label>Nome completo</label><input id="tName" placeholder="Nome do técnico"></div>
+        <div class="field"><label>Telefone</label><input id="tPhone" placeholder="(15) 99999-9999"></div>
+        <div class="field"><label>E-mail</label><input id="tEmail" type="email" placeholder="tecnico@empresa.com"></div>
+        <div class="field"><label>Especialidade</label><input id="tSpecialty" placeholder="Ex.: manutenção preventiva"></div>
+      </div>
+      <div class="actions"><button class="btn btn-ghost" onclick="closeModal('technicianModal')">Cancelar</button><button class="btn btn-primary" onclick="saveTechnician()">Salvar técnico</button></div>
     </div>
   </div>
 
@@ -570,6 +589,12 @@
       { id: 'OS-1051', client: 'Escritório Alfa', service: 'Instalação', date: '2026-09-08', time: '16:30', tech: 'Técnico 01', status: 'Agendada' }
     ];
 
+    const seedTechnicians = [
+      { name: 'Técnico 01', phone: '', email: '', specialty: 'Manutenção preventiva' },
+      { name: 'Técnico 02', phone: '', email: '', specialty: 'Instalação' },
+      { name: 'Oscar Junior', phone: '', email: '', specialty: 'Manutenção corretiva' }
+    ];
+
     const equipments = [
       { client: 'Mercado Central', item: 'Split 24.000 BTU', brand: 'LG', serial: 'LG24-A81', location: 'Salão principal' },
       { client: 'Clínica Vida', item: 'Split 18.000 BTU', brand: 'Daikin', serial: 'DK18-992', location: 'Recepção' },
@@ -578,7 +603,9 @@
 
     let clients = JSON.parse(localStorage.getItem('controlar_clients') || 'null') || seedClients;
     let orders = JSON.parse(localStorage.getItem('controlar_orders') || 'null') || seedOS;
+    let technicians = JSON.parse(localStorage.getItem('controlar_technicians') || 'null') || seedTechnicians;
     let pendingRole = 'admin';
+    let currentTechnician = 'Oscar Junior';
     let techServiceStarted = false;
     let techStartTime = null;
     let techTimer = null;
@@ -599,6 +626,13 @@
     function openLogin(role) {
       pendingRole = role;
       document.getElementById('loginTitle').textContent = role === 'tecnico' ? 'Área do Técnico' : 'Área do Cliente';
+      const technicianField = document.getElementById('technicianLoginField');
+      if (role === 'tecnico') {
+        technicianField.classList.remove('hidden');
+        renderTechnicianOptions('technicianLogin');
+      } else {
+        technicianField.classList.add('hidden');
+      }
       document.getElementById('loginModal').classList.add('open');
     }
 
@@ -612,6 +646,10 @@
 
     function openClient() {
       document.getElementById('clientModal').classList.add('open');
+    }
+
+    function openTechnician() {
+      document.getElementById('technicianModal').classList.add('open');
     }
 
     function openOS() {
@@ -673,6 +711,31 @@
       showToast('Cliente cadastrado.');
     }
 
+    function saveTechnician() {
+      const name = document.getElementById('tName').value.trim();
+      if (!name) {
+        showToast('Informe o nome do técnico.');
+        return;
+      }
+
+      if (technicians.some(technician => technician.name.toLowerCase() === name.toLowerCase())) {
+        showToast('Já existe um técnico com esse nome.');
+        return;
+      }
+
+      technicians.push({
+        name,
+        phone: document.getElementById('tPhone').value.trim(),
+        email: document.getElementById('tEmail').value.trim(),
+        specialty: document.getElementById('tSpecialty').value.trim() || 'Atendimento geral'
+      });
+
+      localStorage.setItem('controlar_technicians', JSON.stringify(technicians));
+      closeModal('technicianModal');
+      renderAll();
+      showToast('Técnico cadastrado.');
+    }
+
     function saveOS() {
       const osClient = document.getElementById('osClient');
       const osService = document.getElementById('osService');
@@ -722,6 +785,42 @@
 
       const body = document.getElementById('clientsBody');
       if (body) body.innerHTML = rows || '<tr><td colspan="5">Nenhum cliente encontrado.</td></tr>';
+    }
+
+    function renderTechnicianOptions(selectId) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+      const selected = select.value || currentTechnician;
+      select.innerHTML = technicians.map(technician => `<option value="${technician.name}">${technician.name}</option>`).join('');
+      if (technicians.some(technician => technician.name === selected)) select.value = selected;
+    }
+
+    function renderTechnicians() {
+      const list = document.getElementById('techniciansList');
+      if (!list) return;
+      list.innerHTML = technicians.map(technician => {
+        const assignedOrders = orders.filter(order => order.tech === technician.name).length;
+        return `<div class="list-card"><div><b>${technician.name}</b><p>${technician.specialty} • ${technician.phone || 'Telefone não informado'}${technician.email ? ` • ${technician.email}` : ''}</p></div><span class="badge info">${assignedOrders} OS atribuída(s)</span></div>`;
+      }).join('');
+    }
+
+    function renderTechnicianArea() {
+      const assignedOrders = orders.filter(order => order.tech === currentTechnician);
+      const ordersContainer = document.getElementById('technicianOrders');
+      const route = document.getElementById('technicianRoute');
+      const currentTitle = document.getElementById('technicianCurrentTitle');
+      const currentDetails = document.getElementById('technicianCurrentDetails');
+      const openOrders = assignedOrders.filter(order => order.status !== 'Concluída');
+      const currentOrder = openOrders[0];
+
+      if (currentTitle) currentTitle.textContent = currentOrder ? `${currentOrder.id} • ${currentOrder.client}` : 'Nenhuma OS atribuída';
+      if (currentDetails) currentDetails.textContent = currentOrder ? `${currentOrder.service} • ${currentOrder.date} • ${currentOrder.time}` : 'As novas ordens atribuídas a você aparecerão aqui.';
+      if (ordersContainer) {
+        ordersContainer.innerHTML = assignedOrders.length ? assignedOrders.map(order => `<div class="list-card"><div><b>${order.id} • ${order.client}</b><p>${order.date} • ${order.time} • ${order.service}</p></div>${statusBadge(order.status)}</div>`).join('') : '<p style="color:var(--muted)">Nenhuma ordem de serviço atribuída a este técnico.</p>';
+      }
+      if (route) {
+        route.innerHTML = assignedOrders.length ? assignedOrders.map(order => `<div class="event"><b>${order.time} • ${order.client}</b><span>${order.service} • ${statusBadge(order.status)}</span></div>`).join('') : '<p style="color:var(--muted)">Sua rota está livre no momento.</p>';
+      }
     }
 
     function renderAgenda() {
@@ -811,9 +910,10 @@
       } else if (role === 'tecnico') {
         techNav.classList.remove('hidden');
         app.classList.add('tech-role');
-        profileName.textContent = 'Oscar Junior';
+        currentTechnician = document.getElementById('technicianLogin').value || technicians[0]?.name || 'Técnico';
+        profileName.textContent = currentTechnician;
         profileRole.textContent = 'Técnico';
-        profileAvatar.textContent = 'OJ';
+        profileAvatar.textContent = currentTechnician.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
         switchView('tecnico-home', 'Minha rota');
       } else {
         adminNav.classList.remove('hidden');
@@ -838,11 +938,15 @@
 
     function renderAll() {
       renderClients();
+      renderTechnicianOptions('osTech');
+      renderTechnicianOptions('technicianLogin');
+      renderTechnicians();
       renderAgenda();
       renderOSList();
       renderEquipmentList();
       renderAlerts();
       renderTimeline();
+      renderTechnicianArea();
       const today = new Date();
       const todayText = document.getElementById('todayText');
       if (todayText) todayText.textContent = today.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
@@ -1033,6 +1137,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.side-nav button[data-view]').forEach(button => {
+        button.addEventListener('click', () => {
+          const navigation = button.parentElement;
+          navigation.querySelectorAll('button').forEach(item => item.classList.remove('active'));
+          button.classList.add('active');
+          switchView(button.dataset.view, button.textContent.replace(/^[^\p{L}\p{N}]+/u, '').trim());
+        });
+      });
       renderAll();
       calculateNextMaintenance();
       initSignaturePad();

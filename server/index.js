@@ -1,28 +1,28 @@
 const express = require('express');
-const cors = require('cors');
+const app = express();
 const path = require('path');
 require('dotenv').config();
 
 const { SERVER_MESSAGES } = require('./src/constants');
 
-const app = express();
-
-// Middlewares
-app.use(cors());
+// 1. Middlewares globais 
 app.use(express.json());
 
-// Servir arquivos estáticos da raiz do projeto (um nível acima de 'server')
 app.use(express.static(path.join(__dirname, '..')));
 
-// Inicializa a conexão com o banco de dados
+// 2. Inicializa a conexão com o banco de dados
 require('./src/db');
 
-// Registro de rotas da API
+// 3. Registro de rotas da API
 const usersRoutes = require('./src/routes/users');
 app.use('/api/users', usersRoutes);
 
-// Inicialização do servidor
+const clientRoutes = require('./src/routes/clients');
+app.use('/api/clients', clientRoutes);
+
+// 4. Inicialização única do servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(SERVER_MESSAGES.RUNNING(PORT));
+    const msg = SERVER_MESSAGES && SERVER_MESSAGES.RUNNING ? SERVER_MESSAGES.RUNNING(PORT) : `Servidor rodando na porta ${PORT}`;
+    console.log(msg);
 });

@@ -1144,12 +1144,6 @@ body:not(.admin-session) [data-admin-only="true"]{display:none!important}
 <div class="toast" id="toast"></div>
 
 <script>
-const seedClients=[
- {name:"Mercado Central",phone:"(15) 99910-2233",type:"Comércio",city:"Itu",last:"2026-03-12",next:"2026-09-12"},
- {name:"Clínica Vida",phone:"(15) 99877-4321",type:"Empresa",city:"Tatuí",last:"2026-04-08",next:"2026-10-08"},
- {name:"Carlos Henrique",phone:"(15) 99750-1180",type:"Residencial",city:"Cabreúva",last:"2026-03-18",next:"2026-09-18"},
- {name:"Padaria Avenida",phone:"(15) 99620-7840",type:"Comércio",city:"Porangaba",last:"2026-02-28",next:"2026-09-10"}
-];
 const seedOS=[
  {id:"OS-1048",client:"Mercado Central",service:"Manutenção preventiva",date:"2026-09-08",time:"08:30",tech:"Técnico 01",status:"Em andamento"},
  {id:"OS-1049",client:"Ana Paula",service:"Higienização",date:"2026-09-08",time:"10:30",tech:"Técnico 02",status:"Agendada"},
@@ -1162,7 +1156,7 @@ const equipments=[
  {client:"Carlos Henrique",item:"Split 12.000 BTU",brand:"Samsung",serial:"SS12-781",location:"Quarto"}
 ];
 
-let clients=JSON.parse(localStorage.getItem("controlar_clients")||"null")||seedClients;
+let clients=[]
 let orders=JSON.parse(localStorage.getItem("controlar_orders")||"null")||seedOS;
 
 function fmtDate(v){ if(!v)return "-"; const [y,m,d]=v.split("-"); return `${d}/${m}/${y}`; }
@@ -1205,12 +1199,17 @@ function statusBadge(s){
  const c=s==="Concluída"?"ok":s==="Em andamento"?"warn":"info"; return `<span class="badge ${c}">${s}</span>`
 }
 function renderClients(){
- const q=(document.getElementById("clientSearch")?.value||"").toLowerCase();
- const rows=clients.filter(c=>Object.values(c).join(" ").toLowerCase().includes(q)).map(c=>
- `<tr><td><b>${c.name}</b><br><small>${c.city||""}</small></td><td>${c.phone||"-"}</td><td><span class="badge info">${c.type}</span></td><td>${fmtDate(c.last)}</td><td>${fmtDate(c.next)}</td></tr>`).join("");
- document.getElementById("clientsBody").innerHTML=rows||`<tr><td colspan="5">Nenhum cliente encontrado.</td></tr>`;
+    const searchEl = document.getElementById("clientSearch");
+    const q = (searchEl ? searchEl.value : "").toLowerCase();
+    
+    const rows = clients.filter(c => Object.values(c).join(" ").toLowerCase().includes(q)).map(c => 
+    `<tr><td><b>${c.name}</b><br><small>${c.city||""}</small></td><td>${c.phone||"-"}</td><td><span class="badge info">${c.type}</span></td><td>${fmtDate(c.last)}</td><td>${fmtDate(c.next)}</td></tr>`).join("");
+    
+    const clientsBodyEl = document.getElementById("clientsBody");
+    if (clientsBodyEl) {
+        clientsBodyEl.innerHTML = rows || `<tr><td colspan="5">Nenhum cliente encontrado.</td></tr>`;
+    }
 }
-
 let techServiceStarted=false;
 let techStartTime=null;
 let techTimer=null;
@@ -1384,15 +1383,26 @@ function selectAccount(key){
  const title=document.getElementById("loginTitle");
  if(title)title.textContent=a.role==="admin"?"Área do Administrador":a.role==="cliente"?"Área do Cliente":"Área do Técnico";
 }
-function loginSelectedAccount(){
- currentAccount=CONTROLAR_ACCOUNTS[selectedAccountKey];
- localStorage.setItem("controlar_current_account",selectedAccountKey);
- closeModal("loginModal");
- document.getElementById("site").style.display="none";
- document.getElementById("app").style.display="block";
- applyRole(currentAccount.role,currentAccount);
- renderAll();
+
+// Função para buscar clientes do nosso Back-End Node.js/MySQL
+async function carregarDadosDoServidor() {
+    try {
+        const resClients = await fetch('http://localhost:3000/api/clients');
+        const jsonClients = await resClients.json();
+        
+        if (jsonClients.success) {
+            // Atualiza o array 'clients' com os dados reais vindos do banco
+            clients = jsonClients.data;
+        }
+
+        // Atualiza a tela inteira com os novos dados
+        renderAll();
+        console.log("Dados sincronizados com o servidor com sucesso!");
+    } catch (error) {
+        console.error("Erro ao conectar com o back-end:", error);
+    }
 }
+
 function applyRole(role,account){
  const a=account||currentAccount||CONTROLAR_ACCOUNTS.admin;
  const adminNav=document.getElementById("adminNav");
@@ -1439,22 +1449,86 @@ function submitClientRequest(){
  document.getElementById("clientReqNote").value="";
 }
 
-function renderAll(){
- const now=new Date();
- document.getElementById("todayText").textContent=now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"});
- document.getElementById("kpiClients").textContent=clients.length;
- document.getElementById("kpiOpen").textContent=orders.filter(o=>o.status!=="Concluída").length;
- const todays=orders.filter(o=>o.date==="2026-09-08");
- document.getElementById("kpiToday").textContent=todays.length;
- document.getElementById("timeline").innerHTML=todays.map(o=>`<div class="event"><b>${o.time} • ${o.client}</b><span>${o.service} • ${o.tech} • ${o.status}</span></div>`).join("")||"<p>Sem atendimentos para hoje.</p>";
- const alerts=clients.filter(c=>c.next).slice().sort((a,b)=>a.next.localeCompare(b.next)).slice(0,6);
- document.getElementById("kpiDue").textContent=alerts.length;
- document.getElementById("dashboardAlerts").innerHTML=alerts.slice(0,3).map((c,i)=>`<div class="alert-box ${i<2?"danger":"warn"}"><b>${c.name}</b><br><small>Revisão prevista: ${fmtDate(c.next)}</small></div>`).join("");
- document.getElementById("allAlerts").innerHTML=alerts.map(c=>`<div class="list-card"><div><b>${c.name}</b><p>${c.type} • ${c.city} • revisão em ${fmtDate(c.next)}</p></div><button class="btn btn-primary" onclick="prefillOS('${c.name.replaceAll("'","\\'")}')">Gerar OS</button></div>`).join("");
- renderClients();
- document.getElementById("agendaList").innerHTML=orders.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map(o=>`<div class="list-card"><div><b>${fmtDate(o.date)} • ${o.time} — ${o.client}</b><p>${o.service} • ${o.tech}</p></div>${statusBadge(o.status)}</div>`).join("");
- document.getElementById("osList").innerHTML=orders.slice().reverse().map(o=>`<div class="list-card"><div><b>${o.id} • ${o.client}</b><p>${o.service} • ${fmtDate(o.date)} ${o.time} • ${o.tech}</p></div>${statusBadge(o.status)}</div>`).join("");
- document.getElementById("equipmentList").innerHTML=equipments.map(e=>`<div class="list-card"><div><b>${e.item} • ${e.brand}</b><p>${e.client} • ${e.location} • Série ${e.serial}</p></div><span class="badge ok">Ativo</span></div>`).join("");
+function renderAll() {
+    // Garante que a data atual só é aplicada se o elemento existir na tela
+    const todayEl = document.getElementById("todayText");
+    if (todayEl) {
+        const now = new Date();
+        todayEl.textContent = now.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+    }
+
+    // KPI Clientes
+    const kpiClientsEl = document.getElementById("kpiClients");
+    if (kpiClientsEl) {
+        kpiClientsEl.textContent = clients ? clients.length : 0;
+    }
+
+    // KPI Chamados Abertos
+    const kpiOpenEl = document.getElementById("kpiOpen");
+    if (kpiOpenEl) {
+        kpiOpenEl.textContent = orders ? orders.filter(o => o.status !== "Concluída").length : 0;
+    }
+
+    // Atendimentos de hoje e timeline
+    const todays = orders ? orders.filter(o => o.date === "2026-09-08") : [];
+
+    const kpiTodayEl = document.getElementById("kpiToday");
+    if (kpiTodayEl) {
+        kpiTodayEl.textContent = todays.length;
+    }
+
+    const timelineEl = document.getElementById("timeline");
+    if (timelineEl) {
+        timelineEl.innerHTML = todays.map(o => `<div class="event"><b>${o.time} - ${o.client}</b><span>${o.service} - ${o.tech} ${o.status}</span></div>`).join("") || "<p>Sem atendimentos para hoje.</p>";
+    }
+
+    // Alertas de revisão
+    const alerts = clients ? clients.filter(c => c.next).slice().sort((a, b) => a.next.localeCompare(b.next)).slice(0, 6) : [];
+
+    const kpiDueEl = document.getElementById("kpiDue");
+    if (kpiDueEl) {
+        kpiDueEl.textContent = alerts.length;
+    }
+
+    const dashboardAlertsEl = document.getElementById("dashboardAlerts");
+    if (dashboardAlertsEl) {
+        dashboardAlertsEl.innerHTML = alerts.slice(0, 3).map((c, i) => `<div class="alert-box ${i < 2 ? "danger" : "warn"}"><b>${c.name}</b><br><small>Revisão prevista: ${typeof fmtDate === 'function' ? fmtDate(c.next) : c.next}</small></div>`).join("");
+    }
+
+    const allAlertsEl = document.getElementById("allAlerts");
+    if (allAlertsEl) {
+        allAlertsEl.innerHTML = alerts.map(c => `<div class="list-card"><div><b>${c.name}</b><p>${c.type || ''} - ${c.city || ''} revisão em ${typeof fmtDate === 'function' ? fmtDate(c.next) : c.next}</p></div><button class="btn btn-primary" onclick="prefillOS('${c.name.replaceAll("'", "\\'")}')">Gerar OS</button></div>`).join("");
+    }
+
+    // Renderizar clientes
+ function renderClients() {
+    const searchEl = document.getElementById("clientSearch");
+    const q = (searchEl ? searchEl.value : "").toLowerCase();
+    
+    const rows = clients.filter(c => Object.values(c).join(" ").toLowerCase().includes(q)).map(c => 
+        `<tr><td><b>${c.name}</b><br><small>${c.city||""}</small></td><td>${c.phone||"-"}</td><td><span class="badge info">${c.type}</span></td><td>${fmtDate(c.last)}</td><td>${fmtDate(c.next)}</td></tr>`
+    ).join("");
+    
+    const clientsBodyEl = document.getElementById("clientsBody");
+    if (clientsBodyEl) {
+        clientsBodyEl.innerHTML = rows || `<tr><td colspan="5">Nenhum cliente encontrado.</td></tr>`;
+    }
+}
+    // Listas gerais (Agenda, Ordens de Serviço, Equipamentos)
+    const agendaListEl = document.getElementById("agendaList");
+    if (agendaListEl && orders) {
+        agendaListEl.innerHTML = orders.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).map(o => `<div class="list-card"><div><b>${typeof fmtDate === 'function' ? fmtDate(o.date) : o.date} - ${o.time} — ${o.client}</b><p>${o.service} ${o.tech}</p></div>${typeof statusBadge === 'function' ? statusBadge(o.status) : o.status}</div>`).join("");
+    }
+
+    const osListEl = document.getElementById("osList");
+    if (osListEl && orders) {
+        osListEl.innerHTML = orders.slice().reverse().map(o => `<div class="list-card"><div><b>${o.id} - ${o.client}</b><p>${o.service} - ${typeof fmtDate === 'function' ? fmtDate(o.date) : o.date} ${o.time} ${o.tech}</p></div>${typeof statusBadge === 'function' ? statusBadge(o.status) : o.status}</div>`).join("");
+    }
+
+    const equipmentListEl = document.getElementById("equipmentList");
+    if (equipmentListEl && typeof equipments !== 'undefined') {
+        equipmentListEl.innerHTML = equipments.map(e => `<div class="list-card"><div><b>${e.item} - ${e.brand}</b><p>${e.client} - ${e.location} Série ${e.serial}</p></div><span class="badge ok">Ativo</span></div>`).join("");
+    }
 }
 function prefillOS(name){openOS();osClient.value=name;osService.value="Manutenção preventiva"}
 document.querySelectorAll(".side-nav button").forEach(btn=>btn.addEventListener("click",()=>{
@@ -2051,6 +2125,8 @@ const v94Logout=typeof logout==="function"?logout:null;
 if(v94Logout){logout=function(){document.body.classList.remove("admin-session");return v94Logout.apply(this,arguments)}}
 document.addEventListener("DOMContentLoaded",()=>setTimeout(v94ProtectOperationalManagement,80));
 </script>
+<script src="/js/login-mock.js"></script>
+<script src="/js/login.js"></script>
 
 </body>
 </html>

@@ -1,27 +1,18 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../db');
-const { SERVER_MESSAGES, HTTP_STATUS } = require('../constants');
+router.post('/login', async (req, res) => {
+  const { email, senha } = req.body;
 
-// GET /api/users - Listar todos os usuários
-router.get('/', async (req, res) => {
-  try {
-    const [users] = await db.query(
-      'SELECT id, nome, email, perfil, ativo, ultimo_acesso, criado_em, atualizado_em FROM usuarios'
-    );
+  const resultado = await autenticarUsuario(email, senha);
 
-    return res.status(HTTP_STATUS.OK).json({
-      success: true,
-      message: SERVER_MESSAGES.USERS_FETCH_SUCCESS,
-      data: users
-    });
-  } catch (error) {
-    console.error('Erro ao buscar usuários:', error);
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+  if (!resultado.valido) {
+    return res.status(resultado.status).json({
       success: false,
-      message: SERVER_MESSAGES.USERS_FETCH_ERROR
+      message: resultado.mensagem
     });
   }
-});
 
-module.exports = router;
+  return res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: "Login realizado com sucesso!",
+    data: resultado.usuario
+  });
+});

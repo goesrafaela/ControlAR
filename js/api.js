@@ -1,5 +1,5 @@
 // api.js - Centralizador de chamadas à API
-import { API_BASE_URL } from './config.js';
+import { API_BASE_URL } from './config';
 
 export async function getUsers() {
     try {

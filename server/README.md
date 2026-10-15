@@ -22,12 +22,14 @@ constants.js (Dentro de server/src/ / Back-End): Fica protegido no servidor Node
 
 Motivo: O navegador e o servidor rodam em ambientes diferentes. Misturar esses códigos geraria conflitos de compatibilidade e bagunçaria a organização do projeto.
 
-4. Por que é importante documentar essas mudanças durante a criação do back-end?
+/---------/
 
-Documentar o projeto enquanto ele está sendo construído traz benefícios fundamentais:
+###Decisão Arquitetural: Abordagem de Migração Híbrida (Front-End para Back-End REST API).
 
-Base para a Apresentação Acadêmica (PI 2): Facilita a explicação clara do código para professores e avaliadores, demonstrando que a aplicação foi desenvolvida com padrões profissionais de mercado (Clean Code e Separation of Concerns).
+Estratégia adotada: Preservação das assinaturas de funções e contratos de variáveis globais (U_CLIENTS, U_ORDERS) no front-end.
 
-Facilidade de Manutenção: Se você precisar alterar a porta do servidor, a URL da API ou uma mensagem de erro daqui a algumas semanas, saberá exatamente em qual arquivo centralizado precisa mexer.
+Justificativa:
 
-Escalabilidade: Qualquer nova tela ou nova rota criada no futuro seguirá o mesmo padrão estruturado, mantendo o projeto limpo e coeso.
+Evitar reescrita desnecessária de toda a camada de interface (index.html), mantendo o design e as regras de negócio visuais já validadas.
+
+Substituir a fonte de dados estática/localStorage por chamadas assíncronas (fetch) aos endpoints desenvolvidos em Node.js (/api/clients, /api/users), que por sua vez consultam o banco de dados relacional MySQL.

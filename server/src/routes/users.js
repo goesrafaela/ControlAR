@@ -3,13 +3,24 @@ const router = express.Router();
 const db = require('../db');
 const { HTTP_STATUS } = require('../constants');
 
+// Rota GET /api/users - Lista todos os usuários relacionando com a tabela clientes via usuario_id
 router.get('/', async (req, res) => {
     try {
-        const [usuarios] = await db.query(`
-            SELECT id, nome, email, perfil, senha_hash AS senha 
-            FROM usuarios
-        `);
+        const querySQL = `
+            SELECT 
+                u.id, 
+                u.nome, 
+                u.email, 
+                u.perfil, 
+                u.senha_hash AS senha,
+                c.id AS cliente_id
+            FROM usuarios u
+            LEFT JOIN clientes c ON c.usuario_id = u.id
+        `;
+
+        const [usuarios] = await db.query(querySQL);
         
+        console.log('📦 Dados vindos do MySQL com JOIN:', usuarios);
         return res.status(HTTP_STATUS.OK).json(usuarios);
     } catch (error) {
         console.error('Erro ao buscar usuários:', error);
@@ -20,11 +31,24 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Rota POST /api/users/login - Valida o e-mail e traz os dados do usuário + vínculo do cliente
 router.post('/login', async (req, res) => {
     const { email } = req.body;
 
     try {
-        const [rows] = await db.query('SELECT id, nome, email, perfil FROM usuarios WHERE email = ?', [email]);
+        const querySQL = `
+            SELECT 
+                u.id, 
+                u.nome, 
+                u.email, 
+                u.perfil,
+                c.id AS cliente_id
+            FROM usuarios u
+            LEFT JOIN clientes c ON c.usuario_id = u.id
+            WHERE u.email = ?
+        `;
+
+        const [rows] = await db.query(querySQL, [email]);
 
         if (rows.length === 0) {
             return res.status(401).json({

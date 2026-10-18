@@ -1,5 +1,4 @@
 // login-mock.js é um arquivo auxiliar para facilitar os testes do protótipo
-// login-mock.js - Arquivo auxiliar para facilitar os testes do protótipo
 
 async function carregarUsuariosDoBancoParaLogin() {
     const container = document.querySelector(".login-account-grid");
@@ -7,14 +6,12 @@ async function carregarUsuariosDoBancoParaLogin() {
 
     try {
         const response = await fetch('/api/users');
-        const resultado = await response.json();
+        const usuariosDoBanco = await response.json();
 
-        if (!resultado.success || !resultado.data) {
+        if (!Array.isArray(usuariosDoBanco) || usuariosDoBanco.length === 0) {
             container.innerHTML = "<p>Nenhum usuário encontrado no banco.</p>";
             return;
         }
-
-        const usuariosDoBanco = resultado.data;
 
         container.innerHTML = usuariosDoBanco.map(user => {
             let cargoTitulo = "Usuário";
@@ -22,11 +19,8 @@ async function carregarUsuariosDoBancoParaLogin() {
             else if (user.perfil === 'TECNICO') cargoTitulo = "Técnico";
             else if (user.perfil === 'CLIENTE') cargoTitulo = "Cliente";
 
-            // Definimos uma senha padrão de teste para o protótipo (já que a do banco é hash)
-            const senhaTeste = "123456";
-
             return `
-                <div class="login-account" onclick="preencherCamposLogin('${user.email}', '${senhaTeste}', '${user.perfil}', this)">
+                <div class="login-account" onclick="preencherCamposLogin('${user.email}', '${user.senha}', '${user.perfil}', this)">
                     <b>${cargoTitulo}</b>
                     <small>${user.nome}</small>
                 </div>
@@ -49,7 +43,7 @@ function preencherCamposLogin(email, senha, perfil, elementoCard) {
     }
 
     if (inputSenha) {
-        inputSenha.value = senha; // Preenche com a senha de teste
+        inputSenha.value = senha;
         inputSenha.dispatchEvent(new Event('input', { bubbles: true }));
     }
 

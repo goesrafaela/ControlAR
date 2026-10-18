@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
-const { SERVER_MESSAGES, HTTP_STATUS } = require('../constants');
+const { HTTP_STATUS } = require('../constants');
 const { verificarCredenciaisUsuario } = require('../utils/auth'); // Reutiliza a mesma função centralizada!
 
 // GET /api/clients - Listar todos os clientes do ControlAr

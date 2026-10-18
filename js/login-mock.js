@@ -1,5 +1,4 @@
 // login-mock.js é um arquivo auxiliar para facilitar os testes do protótipo
-
 async function carregarUsuariosDoBancoParaLogin() {
     const container = document.querySelector(".login-account-grid");
     if (!container) return;
@@ -13,19 +12,7 @@ async function carregarUsuariosDoBancoParaLogin() {
             return;
         }
 
-        container.innerHTML = usuariosDoBanco.map(user => {
-            let cargoTitulo = "Usuário";
-            if (user.perfil === 'ADMIN') cargoTitulo = "Administrador";
-            else if (user.perfil === 'TECNICO') cargoTitulo = "Técnico";
-            else if (user.perfil === 'CLIENTE') cargoTitulo = "Cliente";
-
-            return `
-                <div class="login-account" onclick="preencherCamposLogin('${user.email}', '${user.senha}', '${user.perfil}', this)">
-                    <b>${cargoTitulo}</b>
-                    <small>${user.nome}</small>
-                </div>
-            `;
-        }).join("");
+        renderizarCards(usuariosDoBanco, container);
 
     } catch (error) {
         console.error("Erro ao buscar usuários do MySQL:", error);
@@ -53,6 +40,54 @@ function preencherCamposLogin(email, senha, perfil, elementoCard) {
     window.currentAccount = { email, role: perfil };
 }
 
+async function carregarPorPerfil(perfilDesejado) {
+    const container = document.querySelector(".login-account-grid");
+    if (!container) return;
+
+    try {
+        const response = await fetch('/api/users');
+        const usuariosDoBanco = await response.json();
+
+        if (!Array.isArray(usuariosDoBanco)) return;
+
+        const usuariosFiltrados = usuariosDoBanco.filter(user => {
+            if (perfilDesejado === 'TECNICO') {
+                return user.perfil === 'TECNICO' || user.perfil === 'ADMIN';
+            }
+            return user.perfil === perfilDesejado;
+        });
+
+        if (usuariosFiltrados.length === 0) {
+            container.innerHTML = `<p style="padding:10px;">Nenhum usuário encontrado no banco.</p>`;
+            return;
+        }
+
+        renderizarCards(usuariosFiltrados, container);
+
+    } catch (error) {
+        console.error("Erro ao carregar perfis:", error);
+    }
+}
+
+function renderizarCards(usuarios, container) {
+    container.innerHTML = usuarios.map(user => {
+        let cargoTitulo = "Usuário";
+        if (user.perfil === 'ADMIN') cargoTitulo = "Administrador";
+        else if (user.perfil === 'TECNICO') cargoTitulo = "Técnico";
+        else if (user.perfil === 'CLIENTE') cargoTitulo = "Cliente";
+
+        return `
+            <div class="login-account" onclick="preencherCamposLogin('${user.email}', '${user.senha}', '${user.perfil}', this)">
+                <b>${cargoTitulo}</b>
+                <small>${user.nome}</small>
+            </div>
+        `;
+    }).join("");
+}
+
 window.addEventListener("DOMContentLoaded", () => {
-    carregarUsuariosDoBancoParaLogin();
+    const container = document.querySelector(".login-account-grid");
+    if (container) {
+        container.innerHTML = "<p style='padding: 10px; color: #666;'>Selecione uma área acima para ver os usuários disponíveis.</p>";
+    }
 });

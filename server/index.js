@@ -10,9 +10,11 @@ app.use(express.json());
 const usersRoutes = require('./src/routes/users');
 app.use('/api/users', usersRoutes);
 
-
 const clientRoutes = require('./src/routes/clients');
 app.use('/api/clients', clientRoutes);
+
+const adminRoutes = require('./src/routes/admin'); // (Confira se o arquivo se chama admin.js)
+app.use('/api/admin', adminRoutes);
 
 app.use(express.static(path.join(__dirname, '..')));
 

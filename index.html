@@ -779,9 +779,9 @@ body:not(.admin-session) [data-admin-only="true"]{display:none!important}
         <div class="profile"><div class="avatar" id="profileAvatar">OJ</div><div><b id="profileName">Oscar Junior</b><br><small id="profileRole" style="color:var(--muted)">Administrador</small></div></div>
       </div>
 
-      <section class="view active" id="view-dashboard">
+      <section class="view" id="view-dashboard">
         <div class="kpis">
-          <div class="kpi"><div class="label">ATENDIMENTOS HOJE</div><div class="num" id="kpiToday">4</div><div class="trend">↑ agenda organizada</div></div>
+          <div class="kpi"><div class="label">ATENDIMENTOS HOJE</div><div class="num" id="kpiToday">400</div><div class="trend">↑ agenda organizada</div></div>
           <div class="kpi"><div class="label">MANUTENÇÕES A VENCER</div><div class="num" id="kpiDue">6</div><div class="trend" style="color:var(--warn)">próximos 30 dias</div></div>
           <div class="kpi"><div class="label">ORDENS EM ABERTO</div><div class="num" id="kpiOpen">3</div><div class="trend">acompanhar execução</div></div>
           <div class="kpi"><div class="label">CLIENTES CADASTRADOS</div><div class="num" id="kpiClients">18</div><div class="trend">histórico centralizado</div></div>
@@ -1162,11 +1162,18 @@ let orders=JSON.parse(localStorage.getItem("controlar_orders")||"null")||seedOS;
 function fmtDate(v){ if(!v)return "-"; const [y,m,d]=v.split("-"); return `${d}/${m}/${y}`; }
 function showToast(t){const el=document.getElementById("toast");el.textContent=t;el.style.display="block";setTimeout(()=>el.style.display="none",2600)}
 let pendingRole="admin";
-function openLogin(role){
- document.getElementById("loginModal").classList.add("open");
- if(role==="cliente") selectAccount("cliente");
- else if(role==="tecnico") selectAccount("joao");
- else selectAccount("admin");
+function openLogin(role) {
+    document.getElementById("loginModal").classList.add("open");
+    const inputEmail = document.getElementById("loginEmail");
+    const inputSenha = document.getElementById("loginPassword");
+    if (inputEmail) inputEmail.value = "";
+    if (inputSenha) inputSenha.value = "";
+
+    if (role === 'cliente') {
+        carregarPorPerfil('CLIENTE');
+    } else if (role === 'tecnico') {
+        carregarPorPerfil('TECNICO');
+    }
 }
 function closeModal(id){document.getElementById(id).classList.remove("open")}
 function openQuote(){document.getElementById("quoteModal").classList.add("open")}
@@ -1364,78 +1371,23 @@ function finishCompleteOS(){
  setTimeout(()=>switchView("tecnico-home","Minha rota"),900);
 }
 
+    // 2. CAPTURA DOS ELEMENTOS DA TELA
+    const secoesCliente = document.querySelectorAll('[id^="view-cliente-"]');
+    const secoesTecnico = document.querySelectorAll('[id^="view-tecnico-"]');
+    const secoesAdmin = document.querySelectorAll('[id^="view-admin-"]');
+    
+    const footerTecnico = document.getElementById("mobileTechFooter");
+    const adminFab = document.getElementById("adminFab");
 
-const CONTROLAR_ACCOUNTS={
- admin:{key:"admin",role:"admin",name:"Oscar Junior",avatar:"OJ",email:"admin@controlar.com",password:"admin123",description:"Administrador • visão geral de clientes, técnicos, agenda e OS."},
- joao:{key:"joao",role:"tecnico",name:"João Martins",avatar:"JM",email:"joao@controlar.com",password:"tec123",description:"Técnico 1 • visualiza somente os atendimentos atribuídos a João."},
- marcos:{key:"marcos",role:"tecnico",name:"Marcos Lima",avatar:"ML",email:"marcos@controlar.com",password:"tec123",description:"Técnico 2 • visualiza somente os atendimentos atribuídos a Marcos."},
- renato:{key:"renato",role:"tecnico",name:"Renato Alves",avatar:"RA",email:"renato@controlar.com",password:"tec123",description:"Técnico 3 • visualiza somente os atendimentos atribuídos a Renato."},
- cliente:{key:"cliente",role:"cliente",name:"Carlos Henrique",avatar:"CH",email:"cliente@controlar.com",password:"cliente123",description:"Cliente • visualiza seus equipamentos, histórico e solicitações."}
-};
-let selectedAccountKey="admin";
-let currentAccount=CONTROLAR_ACCOUNTS.admin;
+    // Função auxiliar para esconder um grupo de elementos
+    const esconder = (elementos) => elementos.forEach(el => el.style.display = 'none');
 
-function selectAccount(key){
- selectedAccountKey=key; const a=CONTROLAR_ACCOUNTS[key];
- document.querySelectorAll(".login-account").forEach(b=>b.classList.toggle("active",b.dataset.account===key));
- const e=document.getElementById("loginEmail"),p=document.getElementById("loginPassword"),i=document.getElementById("loginAccountInfo");
- if(e)e.value=a.email;if(p)p.value=a.password;if(i)i.textContent=a.description;
- const title=document.getElementById("loginTitle");
- if(title)title.textContent=a.role==="admin"?"Área do Administrador":a.role==="cliente"?"Área do Cliente":"Área do Técnico";
-}
+    // Primeiro, oculta todas as seções para garantir uma limpa
+    esconder(secoesCliente);
+    esconder(secoesTecnico);
+    esconder(secoesAdmin);
 
-// Função para buscar clientes do nosso Back-End Node.js/MySQL
-async function carregarDadosDoServidor() {
-    try {
-        const resClients = await fetch('http://localhost:3000/api/clients');
-        const jsonClients = await resClients.json();
-        
-        if (jsonClients.success) {
-            // Atualiza o array 'clients' com os dados reais vindos do banco
-            clients = jsonClients.data;
-        }
-
-        // Atualiza a tela inteira com os novos dados
-        renderAll();
-        console.log("Dados sincronizados com o servidor com sucesso!");
-    } catch (error) {
-        console.error("Erro ao conectar com o back-end:", error);
-    }
-}
-
-function applyRole(role,account){
- const a=account||currentAccount||CONTROLAR_ACCOUNTS.admin;
- const adminNav=document.getElementById("adminNav");
- const clientNav=document.getElementById("clientNav");
- const techNav=document.getElementById("techNav");
- const mobileFooter=document.getElementById("mobileTechFooter");
- const adminFab=document.getElementById("adminFab");
- document.getElementById("app").classList.remove("tech-role");
- mobileFooter.classList.add("hidden");
- adminFab.classList.add("hidden");
- [adminNav,clientNav,techNav].forEach(n=>n.classList.add("hidden"));
- document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-
- let firstView="dashboard",title="Dashboard";
- if(role==="cliente"){
-   clientNav.classList.remove("hidden"); firstView="cliente-home";title="Meu painel";
- }else if(role==="tecnico"){
-   techNav.classList.remove("hidden");mobileFooter.classList.remove("hidden");
-   document.getElementById("app").classList.add("tech-role");
-   firstView="tecnico-home";title="Minha rota";
-   setTimeout(calculateNextMaintenance,50);
- }else{
-   adminNav.classList.remove("hidden");adminFab.classList.remove("hidden");
- }
- profileAvatar.textContent=a.avatar;profileName.textContent=a.name;
- profileRole.textContent=role==="admin"?"Administrador":role==="cliente"?"Cliente":"Técnico";
- const target=document.getElementById("view-"+firstView);if(target)target.classList.add("active");
- document.getElementById("viewTitle").textContent=title;
- document.querySelectorAll(".side-nav button").forEach(b=>b.classList.remove("active"));
- const firstBtn=document.querySelector(`.side-nav:not(.hidden) button[data-view="${firstView}"]`);
- if(firstBtn)firstBtn.classList.add("active");
- const gestao=document.getElementById("gestao-v7");if(gestao)gestao.style.display=role==="admin"?"block":"none";
-}
+ 
 function showClientRequest(){
  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
  document.getElementById("view-cliente-solicitar").classList.add("active");
@@ -1680,9 +1632,6 @@ function opsTechDetail(key){
  const t=OPS[key];
  v7Open(t.name,`<div class="v7-detail"><b>Status atual</b><br>${t.state}</div><div class="v7-detail"><b>Localização operacional</b><br>${t.location}</div><div class="v7-detail"><b>Próximo compromisso</b><br>${t.next}</div><div class="v7-detail"><b>Carga planejada</b><br>${t.progress}%</div><div class="v7-detail"><b>OS / Clientes</b><br>${t.jobs.map(j=>`${j.id} • ${j.client} • ${j.time} • ${j.status}`).join("<br>")}</div><div class="v7-detail"><b>Pendências</b><br>${t.pending||"Nenhuma pendência operacional"}</div>`);
 }
-const opsOldApply=applyRole;
-applyRole=function(role,account){opsOldApply(role,account);setTimeout(installOpsNav,0);};
-document.addEventListener("DOMContentLoaded",()=>{installOpsNav();renderOps();});
 </script>
 
 
@@ -1859,11 +1808,6 @@ function opsTechDetail(key){
  document.getElementById("tdIndicators").innerHTML=`<div class="tech-detail-row"><span>Carga planejada</span><b>${x.progress}%</b></div><div class="tech-detail-row"><span>Clientes exclusivos nesta agenda</span><b>${new Set(jobs.map(j=>j.clientId)).size}</b></div><div class="tech-detail-row"><span>Em execução</span><b>${jobs.filter(j=>/atendimento|deslocamento/i.test(j.status)).length}</b></div>`;
  document.getElementById("techDetailPage").style.display="block";
 }
-const uOldApply=applyRole;
-applyRole=function(role,account){uOldApply(role,account);setTimeout(()=>{if(role==="tecnico")renderUnifiedTechnician();if(role==="admin"&&document.getElementById("opsTechs"))renderOps();},0);}
-const uOldRenderAll=renderAll;
-renderAll=function(){uOldRenderAll();setTimeout(()=>{if(currentAccount&&currentAccount.role==="tecnico")renderUnifiedTechnician();},0)}
-document.addEventListener("DOMContentLoaded",()=>setTimeout(()=>{if(currentAccount&&currentAccount.role==="tecnico")renderUnifiedTechnician();},0));
 </script>
 
 
@@ -1905,18 +1849,6 @@ function renderAdminAlertsUnified(){
  });
  v.innerHTML=`<div class="panel"><div class="sync-note">Alertas derivados do status atual das OS, sem lista separada.</div><h3>Alertas operacionais</h3>${alerts.length?alerts.map(a=>`<div class="sync-alert ${a.type}"><b>${a.title}</b><br><span style="font-size:12px">${a.text}</span></div>`).join(""):'<div class="unified-empty">Nenhum alerta operacional.</div>'}</div>`;
 }
-function renderAdminDashboardUnified(){
- const v=document.getElementById("view-dashboard");if(!v)return;
- const rows=adminUnifiedRows(),pending=rows.filter(x=>/pendente|confirma/i.test(x.o.status)).length,active=rows.filter(x=>/atendimento|deslocamento/i.test(x.o.status)).length;
- // Preserve a professional admin landing page, but derive numbers from the unified base.
- v.innerHTML=`<div class="kpis">
- <div class="kpi"><div class="label">CLIENTES EM ATENDIMENTO</div><div class="num">${new Set(rows.map(x=>x.c.id)).size}</div><div class="trend">base atual das OS</div></div>
- <div class="kpi"><div class="label">OS DISTRIBUÍDAS</div><div class="num">${rows.length}</div><div class="trend">3 técnicos</div></div>
- <div class="kpi"><div class="label">EM EXECUÇÃO</div><div class="num">${active}</div><div class="trend">atendimento/deslocamento</div></div>
- <div class="kpi"><div class="label">PENDÊNCIAS</div><div class="num">${pending}</div><div class="trend">exigem ação</div></div></div>
- <div class="grid2"><div class="panel"><h3>Distribuição atual da equipe</h3>${Object.entries(U_TECHS).map(([k,x])=>{const js=uOrdersForTech(k);return `<div class="list-card"><div><b>${x.name}</b><p>${x.state} • ${x.location}<br>${js.map(j=>`${j.id} ${uClient(j).name}`).join(" • ")}</p></div><b>${js.length} OS</b></div>`}).join("")}</div>
- <div class="panel"><h3>Próximos atendimentos</h3>${rows.map(x=>`<div class="list-card"><div><b>${x.o.time} • ${x.c.name}</b><p>${x.o.id} • ${x.tech.name}</p></div><span class="badge ${uStatusClass(x.o.status)}">${x.o.status}</span></div>`).join("")}</div></div>`;
-}
 function renderAdminUnified(){
  if(!currentAccount||currentAccount.role!=="admin")return;
  renderAdminDashboardUnified();renderAdminClientsUnified();renderAdminAgendaUnified();renderAdminOrdersUnified();renderAdminEquipmentUnified();renderAdminAlertsUnified();
@@ -1925,10 +1857,6 @@ function renderAdminUnified(){
 // Ensure delegation refreshes every admin area.
 const v81Delegate=uDelegate;
 uDelegate=function(orderId,toKey){v81Delegate(orderId,toKey);setTimeout(renderAdminUnified,0);}
-// Ensure admin render after login.
-const v81Apply=applyRole;
-applyRole=function(role,account){v81Apply(role,account);setTimeout(()=>{if(role==="admin")renderAdminUnified();},0);}
-document.addEventListener("DOMContentLoaded",()=>setTimeout(()=>{if(currentAccount&&currentAccount.role==="admin")renderAdminUnified();},50));
 </script>
 
 
@@ -1945,12 +1873,7 @@ function v90Event(type,text,meta={}){
  v90Toast(text);v90RefreshAll();
 }
 function v90Toast(text){let e=document.getElementById("v90Toast");if(!e)return;e.textContent=text;e.style.display="block";clearTimeout(window.v90T);window.v90T=setTimeout(()=>e.style.display="none",2600)}
-function v90RefreshAll(){
- if(currentAccount&&currentAccount.role==="admin"&&typeof renderAdminUnified==="function")renderAdminUnified();
- if(currentAccount&&currentAccount.role==="tecnico"&&typeof renderUnifiedTechnician==="function")renderUnifiedTechnician();
- if(currentAccount&&currentAccount.role==="cliente")v90RenderClient();
- v90RenderAdminEvents();
-}
+
 function v90RenderClient(){
  if(!currentAccount||currentAccount.role!=="cliente")return;
  // Carlos is a demo customer separate from current field jobs; his requests feed admin.
@@ -2014,26 +1937,10 @@ renderAdminAlertsUnified=function(){
    const p=v.querySelector(".panel");req.forEach(r=>p.insertAdjacentHTML("beforeend",`<div class="sync-alert info"><b>${r.id} • Nova solicitação</b><br><span style="font-size:12px">${r.client} solicitou ${r.service}. Aguardando triagem do administrador.</span></div>`));
  }
 }
-// Patch client request button to produce a connected demo request when possible.
-document.addEventListener("click",e=>{
- const txt=(e.target.textContent||"").trim().toLowerCase();
- if(currentAccount&&currentAccount.role==="cliente"&&(txt.includes("solicitar serviço")||txt.includes("nova solicitação"))){
-   setTimeout(()=>{if(confirm("Deseja registrar uma solicitação demonstrativa conectada ao administrador?"))v90CreateClientRequest()},100);
- }
-});
-// On profile change, always rerender from shared state.
-const v90Apply=applyRole;
-applyRole=function(role,account){v90Apply(role,account);setTimeout(v90RefreshAll,20)}
+
 window.addEventListener("storage",e=>{if([V90_EVENTS_KEY,V90_REQUESTS_KEY,"controlar_v80_orders"].includes(e.key)){U_ORDERS=uLoadOrders();v90RefreshAll();}});
-document.addEventListener("DOMContentLoaded",()=>setTimeout(v90RefreshAll,80));
 </script>
 <div id="v90Toast" class="v90-toast"></div>
-
-
-
-
-
-
 
 
 <script id="v93-home-normalization-js">
@@ -2092,41 +1999,16 @@ function v93ContextViews(){
  });
 }
 function v93Apply(){v93NormalizeHome();v93ContextViews();}
-const v93Role=applyRole;applyRole=function(role,account){v93Role(role,account);setTimeout(v93Apply,60)}
 document.addEventListener("DOMContentLoaded",()=>setTimeout(v93Apply,120));
 </script>
 
-
 <script id="v94-admin-privacy-js">
-function v94ProtectOperationalManagement(){
- const isAdmin=!!(currentAccount&&currentAccount.role==="admin");
- document.body.classList.toggle("admin-session",isAdmin);
-
- // Mark every known management/operations block as private.
- ["opsCommandCenter","techDetailPage","v7-operational-management","operationalManagement"].forEach(id=>{
-   const el=document.getElementById(id);if(el)el.setAttribute("data-admin-only","true");
- });
-
- // Remove accidental operational management blocks from the public DOM flow.
- document.querySelectorAll("section,div").forEach(el=>{
-   if(el.closest("#appShell,#opsCommandCenter,#techDetailPage"))return;
-   const h=el.querySelector(":scope > h1,:scope > h2,:scope > h3");
-   if(h && /gest[aã]o operacional|central de opera[cç][oõ]es/i.test(h.textContent||"")){
-      el.setAttribute("data-admin-only","true");
-   }
- });
-}
-const v94Apply=applyRole;
-applyRole=function(role,account){
- v94Apply(role,account);
- setTimeout(v94ProtectOperationalManagement,20);
-}
 const v94Logout=typeof logout==="function"?logout:null;
 if(v94Logout){logout=function(){document.body.classList.remove("admin-session");return v94Logout.apply(this,arguments)}}
-document.addEventListener("DOMContentLoaded",()=>setTimeout(v94ProtectOperationalManagement,80));
 </script>
 <script src="/js/login-mock.js"></script>
 <script src="/js/login.js"></script>
+<script type="module" src="./js/main.js"></script>
 
 </body>
 </html>

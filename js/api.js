@@ -1,5 +1,5 @@
 // api.js - Centralizador de chamadas à API
-import { API_BASE_URL } from './config';
+import { API_BASE_URL } from './config.js';
 
 export async function getUsers() {
     try {
@@ -9,5 +9,18 @@ export async function getUsers() {
     } catch (err) {
         console.error('Erro ao buscar usuários na API:', err);
         return { success: false, data: [] };
+    }
+}
+
+// Adicionamos aqui a função que busca as ordens do painel admin no MySQL
+export async function getAdminDashboardOrders() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/admin/dashboard-orders`);
+        if (!response.ok) throw new Error('Falha ao buscar ordens de serviço');
+        const result = await response.json();
+        return result;
+    } catch (err) {
+        console.error('Erro ao buscar ordens de serviço para o dashboard:', err);
+        return [];
     }
 }

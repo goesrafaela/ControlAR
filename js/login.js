@@ -20,6 +20,7 @@ async function loginSelectedAccount() {
         });
 
         const resultado = await response.json();
+        console.log("O que o servidor respondeu no login:", resultado);
 
         if (!resultado.success) {
             alert(resultado.message || "E-mail ou senha inválidos.");

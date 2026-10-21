@@ -1,8 +1,8 @@
 // main.js - Arquivo principal de controle de tela
 import { loadAdminDashboardData } from './admin-dashboard.js';
+import { renderOpsJobsUnified } from './ops-dashboard.js';
 
 export function applyRole(perfilInput, usuario) {
-    // BLindagem: Normaliza o perfil para maiúsculo e garante que não é nulo
     const perfil = (perfilInput || usuario?.perfil || '').trim().toUpperCase();
 
     document.body.classList.toggle("admin-session", perfil === 'ADMIN');
@@ -34,12 +34,11 @@ export function applyRole(perfilInput, usuario) {
         }
     }
 
-
     // 2. CONTROLE DE VISIBILIDADE DE SEÇÕES
     const secoesCliente = document.querySelectorAll('[id^="view-cliente-"]');
     const secoesTecnico = document.querySelectorAll('[id^="view-tecnico-"]');
     const secoesAdmin = document.querySelectorAll('[id^="view-admin-"]');
-    const viewDashboard = document.getElementById("view-dashboard"); // <--- O fugitivo!
+    const viewDashboard = document.getElementById("view-dashboard");
     const footerTecnico = document.getElementById("mobileTechFooter");
     const adminFab = document.getElementById("adminFab");
 
@@ -47,9 +46,7 @@ export function applyRole(perfilInput, usuario) {
     esconder(secoesCliente);
     esconder(secoesTecnico);
     esconder(secoesAdmin);
-    if (viewDashboard) viewDashboard.style.display = 'none'; // <--- Garante que o dashboard some para os outros perfis
-
-    console.log("Aplicando perfil com segurança:", perfil); // Ajuda a debugar no F12 se precisar
+    if (viewDashboard) viewDashboard.style.display = 'none';
 
     if (perfil === 'CLIENTE') {
         if (footerTecnico) footerTecnico.style.display = 'none';
@@ -74,14 +71,19 @@ export function applyRole(perfilInput, usuario) {
         const homeAdmin = document.getElementById("view-admin-home") || document.getElementById("view-dashboard");
         if (homeAdmin) homeAdmin.style.display = 'block';
         
-        // DISPARA O CARREGAMENTO DOS DADOS DO MYSQL NO DASHBOARD!
+        // CARREGA OS DADOS DO MYSQL NO DASHBOARD E TAMBÉM A TABELA DE OPERAÇÕES!
         loadAdminDashboardData();
+        renderOpsJobsUnified(); 
 
         if (typeof switchView === 'function') switchView('admin-home', 'Dashboard');
     }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+    // Garante arrays globais seguros caso outras partes do sistema leiam antes da API
+    window.U_ORDERS = window.U_ORDERS || [];
+    window.U_TECHS = window.U_TECHS || {};
+
     // Limpeza de funções globais órfãs caso ainda existam no HTML
     if (typeof installOpsNav === 'function') installOpsNav();
     if (typeof renderOps === 'function') renderOps();

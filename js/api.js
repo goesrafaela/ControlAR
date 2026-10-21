@@ -12,12 +12,15 @@ export async function getUsers() {
     }
 }
 
-// Adicionamos aqui a função que busca as ordens do painel admin no MySQL
 export async function getAdminDashboardOrders() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/admin/dashboard-orders`);
+        const url = `${API_BASE_URL}/api/admin/dashboard-orders`;
+
+        const response = await fetch(url);
+
         if (!response.ok) throw new Error('Falha ao buscar ordens de serviço');
         const result = await response.json();
+    
         return result;
     } catch (err) {
         console.error('Erro ao buscar ordens de serviço para o dashboard:', err);

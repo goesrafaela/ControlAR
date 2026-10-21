@@ -30,5 +30,30 @@ router.get('/dashboard-orders', async (req, res) => {
         res.status(500).json({ error: "Erro interno no servidor." });
     }
 });
+router.get('/tecnicos-login', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                t.id AS tecnico_id,
+                t.telefone,
+                t.especialidade,
+                t.localizacao_texto,
+                t.status_operacional,
+                t.ativo AS tecnico_ativo,
+                u.id AS usuario_id,
+                u.nome,
+                u.email,
+                u.perfil
+            FROM tecnicos t
+            INNER JOIN usuarios u ON t.usuario_id = u.id
+            WHERE t.ativo = 1 AND u.ativo = 1
+        `;
+        const [rows] = await db.query(query);
+        res.json(rows);
+    } catch (error) {
+        console.error("Erro ao buscar técnicos para login:", error);
+        res.status(500).json({ error: "Erro interno no servidor." });
+    }
+});
 
 module.exports = router;

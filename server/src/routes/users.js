@@ -20,7 +20,6 @@ router.get('/', async (req, res) => {
 
         const [usuarios] = await db.query(querySQL);
         
-        console.log('📦 Dados vindos do MySQL com JOIN:', usuarios);
         return res.status(HTTP_STATUS.OK).json(usuarios);
     } catch (error) {
         console.error('Erro ao buscar usuários:', error);

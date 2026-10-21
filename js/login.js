@@ -20,7 +20,6 @@ async function loginSelectedAccount() {
         });
 
         const resultado = await response.json();
-        console.log("O que o servidor respondeu no login:", resultado);
 
         if (!resultado.success) {
             alert(resultado.message || "E-mail ou senha inválidos.");
@@ -40,7 +39,6 @@ async function loginSelectedAccount() {
         if (typeof carregarDadosDoServidor === 'function') carregarDadosDoServidor();
         if (typeof renderAll === 'function') renderAll();
 
-        console.log("Login autorizado para:", usuarioLogado.nome);
 
     } catch (error) {
         console.error("Erro na comunicação com o servidor:", error);

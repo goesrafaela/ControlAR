@@ -4,8 +4,6 @@ async function testarUsuariosNoTerminal() {
     try {
         console.log('Buscando usuários no MySQL...');
         const [rows] = await db.query('SELECT id, nome, email, perfil FROM usuarios');
-        
-        console.log('\n--- USUÁRIOS ENCONTRADOS NO BANCO ---');
         console.table(rows); // Exibe os usuários em formato de tabela no terminal
         
     } catch (error) {

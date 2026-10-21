@@ -1572,6 +1572,10 @@ function v7Tecnico(nome,ordens){
 
 
 <script id="v76-command-center-js">
+window.U_TECHS = window.U_TECHS || {};
+window.U_ORDERS = [];
+const U_ORDERS = window.U_ORDERS;
+
 const OPS={
  joao:{name:"João Martins",state:"Em atendimento",stateClass:"state-work",location:"Clínica Santa Helena",next:"Residencial Oliveira • 14:00",progress:65,done:1,pending:1,jobs:[
   {id:"OS-2071",client:"Clínica Santa Helena",time:"08:30",service:"Corretiva",status:"Em atendimento",address:"Centro",equipment:"Daikin 18k"},
@@ -1704,37 +1708,12 @@ function closeTechDetail(){document.getElementById("techDetailPage").style.displ
 
 <script id="v80-unified-data-js">
 // V8.0: fonte única de verdade para Cliente -> OS -> Técnico.
-// A mesma OS exibida ao administrador é a mesma usada no login do técnico.
-const U_CLIENTS={
- C101:{id:"C101",name:"Clínica Santa Helena",city:"Tatuí",phone:"(15) 99821-4101",address:"Centro • Tatuí",equipment:"Daikin EcoSwing 18.000 BTUs",serial:"DK-18-7712"},
- C102:{id:"C102",name:"Residencial Oliveira",city:"Tatuí",phone:"(15) 99731-8820",address:"Jardim Europa • Tatuí",equipment:"LG Dual Inverter 12.000 BTUs",serial:"LG-12-4108"},
- C103:{id:"C103",name:"Mercado Bom Preço",city:"Itu",phone:"(11) 99552-7300",address:"Vila Nova • Itu",equipment:"Elgin Eco 24.000 BTUs",serial:"EL-24-9921"},
- C104:{id:"C104",name:"Farmácia Central",city:"Itu",phone:"(11) 99184-2219",address:"Centro • Itu",equipment:"Springer Midea 18.000 BTUs",serial:"SM-18-5830"},
- C105:{id:"C105",name:"Escritório Almeida",city:"Sorocaba",phone:"(15) 99642-5510",address:"Centro Empresarial • Sorocaba",equipment:"Samsung WindFree 12.000 BTUs",serial:"SW-12-3044"},
- C106:{id:"C106",name:"Ana Beatriz Costa",city:"Sorocaba",phone:"(15) 99714-6602",address:"Bela Vista • Sorocaba",equipment:"Gree G-Top 9.000 BTUs",serial:"GR-09-8270"}
-};
-const U_TECHS={
- joao:{key:"joao",name:"João Martins",state:"Em atendimento",location:"Clínica Santa Helena • Tatuí",progress:65},
- marcos:{key:"marcos",name:"Marcos Lima",state:"Em deslocamento",location:"A caminho do Mercado Bom Preço • Itu",progress:38},
- renato:{key:"renato",name:"Renato Alves",state:"Disponível",location:"Base • disponível para atendimento",progress:20}
-};
-const U_BASE_ORDERS=[
- {id:"OS-2071",clientId:"C101",techKey:"joao",time:"08:30",service:"Manutenção corretiva",status:"Em atendimento",priority:"Alta"},
- {id:"OS-2074",clientId:"C102",techKey:"joao",time:"14:00",service:"Manutenção preventiva",status:"Aguardando confirmação",priority:"Normal"},
- {id:"OS-2072",clientId:"C103",techKey:"marcos",time:"09:30",service:"Higienização",status:"Em deslocamento",priority:"Normal"},
- {id:"OS-2075",clientId:"C104",techKey:"marcos",time:"15:30",service:"Manutenção corretiva",status:"Peça pendente",priority:"Alta"},
- {id:"OS-2073",clientId:"C105",techKey:"renato",time:"10:30",service:"Instalação",status:"Agendada",priority:"Normal"},
- {id:"OS-2076",clientId:"C106",techKey:"renato",time:"16:00",service:"Limpeza & Higienização",status:"Agendada",priority:"Normal"}
-];
+
 function uLoadOrders(){
  let saved;try{saved=JSON.parse(localStorage.getItem("controlar_v80_orders")||"null")}catch(e){}
  if(!Array.isArray(saved)||saved.length!==U_BASE_ORDERS.length){saved=JSON.parse(JSON.stringify(U_BASE_ORDERS));localStorage.setItem("controlar_v80_orders",JSON.stringify(saved))}
  return saved;
 }
-let U_ORDERS=uLoadOrders();
-function uSave(){localStorage.setItem("controlar_v80_orders",JSON.stringify(U_ORDERS))}
-function uOrdersForTech(key){return U_ORDERS.filter(o=>o.techKey===key).sort((a,b)=>a.time.localeCompare(b.time))}
-function uClient(order){return U_CLIENTS[order.clientId]}
 function uTech(key){return U_TECHS[key]}
 function uStatusClass(s){return /pendente|confirma/i.test(s)?"warn":/atendimento|deslocamento/i.test(s)?"info":"ok"}
 
@@ -1781,11 +1760,7 @@ function renderOps(){
  techs.innerHTML=Object.entries(U_TECHS).map(([k,x])=>{const jobs=uOrdersForTech(k),pend=jobs.filter(j=>/pendente|confirma/i.test(j.status)).length;return `<div class="ops-tech"><div class="ops-tech-top"><div><h4>${x.name}</h4><small>${x.location}</small></div><span class="ops-state ${k==="joao"?"state-work":k==="marcos"?"state-road":"state-free"}">${x.state}</span></div><div class="ops-progress"><i style="width:${x.progress}%"></i></div><div class="ops-mini"><div><b>${jobs.length}</b>OS atribuídas</div><div><b>${pend}</b>Pendências</div><div><b>${jobs.filter(j=>/atendimento|deslocamento/i.test(j.status)).length}</b>Em execução</div><div><b>${x.progress}%</b>Carga</div></div><button class="ops-btn light" style="margin-top:10px;width:100%" onclick="opsTechDetail('${k}')">Ver técnico completo</button></div>`}).join("");
  renderOpsJobsUnified();renderOpsRouteUnified();if(typeof renderOpsLog==="function")renderOpsLog();
 }
-function renderOpsJobsUnified(){
- const el=document.getElementById("opsJobsTable");if(!el)return;
- document.getElementById("opsJobs").textContent=U_ORDERS.length;
- el.innerHTML=`<div style="overflow:auto"><table class="ops-table"><thead><tr><th>OS</th><th>Cliente</th><th>Técnico</th><th>Horário</th><th>Status</th><th>Delegar</th></tr></thead><tbody>${U_ORDERS.slice().sort((a,b)=>a.time.localeCompare(b.time)).map(j=>{const c=uClient(j),tech=uTech(j.techKey);return `<tr><td><b>${j.id}</b><div class="ops-client-id">${c.id}</div></td><td>${c.name}<div class="ops-client-id">${c.equipment}</div></td><td>${tech.name}</td><td>${j.time}</td><td><span class="ops-badge">${j.status}</span></td><td><select class="ops-select" onchange="uDelegate('${j.id}',this.value)"><option value="">Mover para...</option>${Object.entries(U_TECHS).filter(([k])=>k!==j.techKey).map(([k,x])=>`<option value="${k}">${x.name}</option>`).join("")}</select></td></tr>`}).join("")}</tbody></table></div>`;
-}
+
 function renderOpsRouteUnified(){
  const el=document.getElementById("opsRoute");if(!el)return;
  el.innerHTML=U_ORDERS.slice().sort((a,b)=>a.time.localeCompare(b.time)).map(j=>{const c=uClient(j),x=uTech(j.techKey);return `<div class="ops-route"><div class="ops-time">${j.time}</div><div><b>${x.name}</b><p>${j.id} • ${c.name} • ${c.city}<br>${j.service} • ${j.status}</p></div></div>`}).join("");

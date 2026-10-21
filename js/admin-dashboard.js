@@ -1,25 +1,59 @@
 // adminDashboard.js - Lógica e renderização do Dashboard Admin
 import { getAdminDashboardOrders } from './api.js';
 
-// 1. Função que busca os dados reais do MySQL e popula/atualiza a lista de ordens
 export async function loadAdminDashboardData() {
     try {
         const data = await getAdminDashboardOrders();
 
         if (Array.isArray(data) && data.length > 0) {
-            // Guarda/atualiza a lista no objeto global da janela
-            window.U_ORDERS = data.map(item => ({
-                id: item.id,
-                time: item.time,
-                status: item.status,
-                techKey: item.techKey,
-                cliente: { id: item.cliente_id, name: item.cliente_nome },
-                tech: { id: item.tecnico_id, name: item.tecnico_nome }
-            }));
+            window.U_ORDERS = data.map(item => {
+                const techId = item.tecnico_id || item.techKey || 0;
+                return {
+                    id: item.id,
+                    time: item.time,
+                    status: item.status,
+                    techKey: `tecnico_${techId}`, 
+                    cliente: { 
+                        id: item.cliente_id, 
+                        name: item.cliente_nome || item.cliente_name || 'Cliente' 
+                    },
+                    tech: { 
+                        id: techId, 
+                        name: item.tecnico_nome || item.tecnico_name || 'Não atribuído' 
+                    }
+                };
+            });
+        }
+        
+        try {
+            const response = await fetch('/api/admin/tecnicos-login');
+            const tecnicos = await response.json();
+            
+            if (Array.isArray(tecnicos)) {
+                window.U_TECHS = {};
+                tecnicos.forEach(tech => {
+                    const key = `tecnico_${tech.tecnico_id}`;
+                    window.U_TECHS[key] = {
+                        name: tech.nome,
+                        state: tech.status_operacional || 'Disponível',
+                        location: tech.localizacao_texto || tech.especialidade || 'Geral'
+                    };
+                });
+            }
+        } catch (err) {
+            console.warn("Não foi possível carregar U_TECHS via API.", err);
         }
 
-        // Desenha a tela do dashboard com os dados atualizados
         renderAdminDashboardUnified();
+        
+        if (typeof renderOpsJobsUnified === 'function') {
+            renderOpsJobsUnified();
+        }
+
+        if (typeof renderUnifiedTechnician === 'function') {
+            renderUnifiedTechnician();
+        }
+        
     } catch (err) {
         console.error("Erro ao carregar dados do dashboard admin:", err);
     }
@@ -30,8 +64,8 @@ function adminUnifiedRows() {
     const orders = window.U_ORDERS || [];
     return orders.slice().sort((a, b) => (a.time || '').localeCompare(b.time || '')).map(o => ({
         o,
-        c: o.cliente || (typeof window.uClient === 'function' ? window.uClient(o) : { id: '', name: 'Cliente' }),
-        tech: o.tech || (typeof window.uTech === 'function' ? window.uTech(o.techKey) : { name: 'Técnico' })
+        c: o.cliente || { id: '', name: 'Cliente' },
+        tech: o.tech || { name: 'Técnico' }
     }));
 }
 
@@ -95,3 +129,10 @@ export function renderAdminDashboardUnified() {
             </div>
         </div>`;
 }
+
+export function uOrdersForTech(key) {
+    const listaOrdens = window.U_ORDERS || [];
+    return listaOrdens.filter(o => o.techKey === key).sort((a, b) => a.time.localeCompare(b.time));
+}
+
+window.uOrdersForTech = uOrdersForTech;

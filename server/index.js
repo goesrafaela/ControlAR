@@ -13,8 +13,11 @@ app.use('/api/users', usersRoutes);
 const clientRoutes = require('./src/routes/clients');
 app.use('/api/clients', clientRoutes);
 
-const adminRoutes = require('./src/routes/admin'); // (Confira se o arquivo se chama admin.js)
+const adminRoutes = require('./src/routes/admin');
 app.use('/api/admin', adminRoutes);
+
+const equipmentsRoutes = require('./src/routes/equipments');
+app.use('/api/equipments', equipmentsRoutes);
 
 app.use(express.static(path.join(__dirname, '..')));
 

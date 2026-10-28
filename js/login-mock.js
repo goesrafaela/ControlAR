@@ -1,4 +1,20 @@
 // login-mock.js é um arquivo auxiliar para facilitar os testes do protótipo
+export function openLogin(role) {
+    const modal = document.getElementById("loginModal");
+    if (modal) modal.classList.add("open");
+
+    const inputEmail = document.getElementById("loginEmail");
+    const inputSenha = document.getElementById("loginPassword");
+    if (inputEmail) inputEmail.value = "";
+    if (inputSenha) inputSenha.value = "";
+
+    if (role === 'cliente') {
+        carregarPorPerfil('CLIENTE');
+    } else if (role === 'tecnico') {
+        carregarPorPerfil('TECNICO');
+    }
+}
+
 async function carregarUsuariosDoBancoParaLogin() {
     const container = document.querySelector(".login-account-grid");
     if (!container) return;
@@ -91,3 +107,8 @@ window.addEventListener("DOMContentLoaded", () => {
         container.innerHTML = "<p style='padding: 10px; color: #666;'>Selecione uma área acima para ver os usuários disponíveis.</p>";
     }
 });
+
+window.openLogin = openLogin;
+window.preencherCamposLogin = preencherCamposLogin;
+window.carregarPorPerfil = carregarPorPerfil;
+window.carregarUsuariosDoBancoParaLogin = carregarUsuariosDoBancoParaLogin;

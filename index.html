@@ -1144,12 +1144,6 @@ body:not(.admin-session) [data-admin-only="true"]{display:none!important}
 <div class="toast" id="toast"></div>
 
 <script>
-const seedOS=[
- {id:"OS-1048",client:"Mercado Central",service:"Manutenção preventiva",date:"2026-09-08",time:"08:30",tech:"Técnico 01",status:"Em andamento"},
- {id:"OS-1049",client:"Ana Paula",service:"Higienização",date:"2026-09-08",time:"10:30",tech:"Técnico 02",status:"Agendada"},
- {id:"OS-1050",client:"Clínica Vida",service:"Manutenção corretiva",date:"2026-09-08",time:"14:00",tech:"Oscar Junior",status:"Agendada"},
- {id:"OS-1051",client:"Escritório Alfa",service:"Instalação",date:"2026-09-08",time:"16:30",tech:"Técnico 01",status:"Agendada"}
-];
 const equipments=[
  {client:"Mercado Central",item:"Split 24.000 BTU",brand:"LG",serial:"LG24-A81",location:"Salão principal"},
  {client:"Clínica Vida",item:"Split 18.000 BTU",brand:"Daikin",serial:"DK18-992",location:"Recepção"},
@@ -1157,24 +1151,9 @@ const equipments=[
 ];
 
 let clients=[]
-let orders=JSON.parse(localStorage.getItem("controlar_orders")||"null")||seedOS;
-
 function fmtDate(v){ if(!v)return "-"; const [y,m,d]=v.split("-"); return `${d}/${m}/${y}`; }
 function showToast(t){const el=document.getElementById("toast");el.textContent=t;el.style.display="block";setTimeout(()=>el.style.display="none",2600)}
 let pendingRole="admin";
-function openLogin(role) {
-    document.getElementById("loginModal").classList.add("open");
-    const inputEmail = document.getElementById("loginEmail");
-    const inputSenha = document.getElementById("loginPassword");
-    if (inputEmail) inputEmail.value = "";
-    if (inputSenha) inputSenha.value = "";
-
-    if (role === 'cliente') {
-        carregarPorPerfil('CLIENTE');
-    } else if (role === 'tecnico') {
-        carregarPorPerfil('TECNICO');
-    }
-}
 function closeModal(id){document.getElementById(id).classList.remove("open")}
 function openQuote(){document.getElementById("quoteModal").classList.add("open")}
 function openClient(){document.getElementById("clientModal").classList.add("open")}
@@ -1189,18 +1168,6 @@ function sendQuote(){
  const name=document.getElementById("qName").value.trim();
  if(!name){showToast("Informe seu nome para continuar.");return}
  closeModal("quoteModal");showToast("Solicitação registrada no protótipo!");
-}
-function saveClient(){
- const name=document.getElementById("cName").value.trim();
- if(!name){showToast("Informe o nome do cliente.");return}
- clients.push({name,phone:cPhone.value,type:cType.value,city:cCity.value,last:cLast.value,next:cNext.value});
- localStorage.setItem("controlar_clients",JSON.stringify(clients));closeModal("clientModal");renderAll();showToast("Cliente cadastrado.");
-}
-function saveOS(){
- if(!osClient.value.trim()){showToast("Informe o cliente.");return}
- const id="OS-"+String(1052+orders.length).padStart(4,"0");
- orders.push({id,client:osClient.value.trim(),service:osService.value,date:osDate.value,time:osTime.value,tech:osTech.value,status:osStatus.value});
- localStorage.setItem("controlar_orders",JSON.stringify(orders));closeModal("osModal");renderAll();showToast(`${id} criada com sucesso.`);
 }
 function statusBadge(s){
  const c=s==="Concluída"?"ok":s==="Em andamento"?"warn":"info"; return `<span class="badge ${c}">${s}</span>`
@@ -1401,87 +1368,6 @@ function submitClientRequest(){
  document.getElementById("clientReqNote").value="";
 }
 
-function renderAll() {
-    // Garante que a data atual só é aplicada se o elemento existir na tela
-    const todayEl = document.getElementById("todayText");
-    if (todayEl) {
-        const now = new Date();
-        todayEl.textContent = now.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
-    }
-
-    // KPI Clientes
-    const kpiClientsEl = document.getElementById("kpiClients");
-    if (kpiClientsEl) {
-        kpiClientsEl.textContent = clients ? clients.length : 0;
-    }
-
-    // KPI Chamados Abertos
-    const kpiOpenEl = document.getElementById("kpiOpen");
-    if (kpiOpenEl) {
-        kpiOpenEl.textContent = orders ? orders.filter(o => o.status !== "Concluída").length : 0;
-    }
-
-    // Atendimentos de hoje e timeline
-    const todays = orders ? orders.filter(o => o.date === "2026-09-08") : [];
-
-    const kpiTodayEl = document.getElementById("kpiToday");
-    if (kpiTodayEl) {
-        kpiTodayEl.textContent = todays.length;
-    }
-
-    const timelineEl = document.getElementById("timeline");
-    if (timelineEl) {
-        timelineEl.innerHTML = todays.map(o => `<div class="event"><b>${o.time} - ${o.client}</b><span>${o.service} - ${o.tech} ${o.status}</span></div>`).join("") || "<p>Sem atendimentos para hoje.</p>";
-    }
-
-    // Alertas de revisão
-    const alerts = clients ? clients.filter(c => c.next).slice().sort((a, b) => a.next.localeCompare(b.next)).slice(0, 6) : [];
-
-    const kpiDueEl = document.getElementById("kpiDue");
-    if (kpiDueEl) {
-        kpiDueEl.textContent = alerts.length;
-    }
-
-    const dashboardAlertsEl = document.getElementById("dashboardAlerts");
-    if (dashboardAlertsEl) {
-        dashboardAlertsEl.innerHTML = alerts.slice(0, 3).map((c, i) => `<div class="alert-box ${i < 2 ? "danger" : "warn"}"><b>${c.name}</b><br><small>Revisão prevista: ${typeof fmtDate === 'function' ? fmtDate(c.next) : c.next}</small></div>`).join("");
-    }
-
-    const allAlertsEl = document.getElementById("allAlerts");
-    if (allAlertsEl) {
-        allAlertsEl.innerHTML = alerts.map(c => `<div class="list-card"><div><b>${c.name}</b><p>${c.type || ''} - ${c.city || ''} revisão em ${typeof fmtDate === 'function' ? fmtDate(c.next) : c.next}</p></div><button class="btn btn-primary" onclick="prefillOS('${c.name.replaceAll("'", "\\'")}')">Gerar OS</button></div>`).join("");
-    }
-
-    // Renderizar clientes
- function renderClients() {
-    const searchEl = document.getElementById("clientSearch");
-    const q = (searchEl ? searchEl.value : "").toLowerCase();
-    
-    const rows = clients.filter(c => Object.values(c).join(" ").toLowerCase().includes(q)).map(c => 
-        `<tr><td><b>${c.name}</b><br><small>${c.city||""}</small></td><td>${c.phone||"-"}</td><td><span class="badge info">${c.type}</span></td><td>${fmtDate(c.last)}</td><td>${fmtDate(c.next)}</td></tr>`
-    ).join("");
-    
-    const clientsBodyEl = document.getElementById("clientsBody");
-    if (clientsBodyEl) {
-        clientsBodyEl.innerHTML = rows || `<tr><td colspan="5">Nenhum cliente encontrado.</td></tr>`;
-    }
-}
-    // Listas gerais (Agenda, Ordens de Serviço, Equipamentos)
-    const agendaListEl = document.getElementById("agendaList");
-    if (agendaListEl && orders) {
-        agendaListEl.innerHTML = orders.slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).map(o => `<div class="list-card"><div><b>${typeof fmtDate === 'function' ? fmtDate(o.date) : o.date} - ${o.time} — ${o.client}</b><p>${o.service} ${o.tech}</p></div>${typeof statusBadge === 'function' ? statusBadge(o.status) : o.status}</div>`).join("");
-    }
-
-    const osListEl = document.getElementById("osList");
-    if (osListEl && orders) {
-        osListEl.innerHTML = orders.slice().reverse().map(o => `<div class="list-card"><div><b>${o.id} - ${o.client}</b><p>${o.service} - ${typeof fmtDate === 'function' ? fmtDate(o.date) : o.date} ${o.time} ${o.tech}</p></div>${typeof statusBadge === 'function' ? statusBadge(o.status) : o.status}</div>`).join("");
-    }
-
-    const equipmentListEl = document.getElementById("equipmentList");
-    if (equipmentListEl && typeof equipments !== 'undefined') {
-        equipmentListEl.innerHTML = equipments.map(e => `<div class="list-card"><div><b>${e.item} - ${e.brand}</b><p>${e.client} - ${e.location} Série ${e.serial}</p></div><span class="badge ok">Ativo</span></div>`).join("");
-    }
-}
 function prefillOS(name){openOS();osClient.value=name;osService.value="Manutenção preventiva"}
 document.querySelectorAll(".side-nav button").forEach(btn=>btn.addEventListener("click",()=>{
  document.querySelectorAll(".side-nav button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
@@ -1981,9 +1867,11 @@ document.addEventListener("DOMContentLoaded",()=>setTimeout(v93Apply,120));
 const v94Logout=typeof logout==="function"?logout:null;
 if(v94Logout){logout=function(){document.body.classList.remove("admin-session");return v94Logout.apply(this,arguments)}}
 </script>
-<script src="/js/login-mock.js"></script>
+<script type="module" src="/js/login-mock.js"></script>
 <script src="/js/login.js"></script>
 <script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/admin-dashboard.js"></script>
+<script src="js/navigation.js"></script>
 
 </body>
 </html>

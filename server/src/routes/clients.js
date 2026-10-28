@@ -48,4 +48,41 @@ router.post('/login', async (req, res) => {
   });
 });
 
+// POST /api/clients - Cadastrar um novo cliente
+router.post('/', async (req, res) => {
+  try {
+    const { nome_razao_social, telefone, tipo } = req.body;
+    
+    if (!nome_razao_social) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ 
+        success: false, 
+        message: "O nome ou razão social é obrigatório." 
+      });
+    }
+
+    const query = `
+      INSERT INTO clientes (nome_razao_social, telefone, tipo, ativo, criado_em) 
+      VALUES (?, ?, ?, 1, NOW())
+    `;
+    
+    const [result] = await db.query(query, [
+      nome_razao_social, 
+      telefone || '', 
+      tipo || 'Residencial'
+    ]);
+    
+    return res.status(HTTP_STATUS.CREATED).json({ 
+      success: true, 
+      message: "Cliente cadastrado com sucesso!", 
+      clientId: result.insertId 
+    });
+  } catch (error) {
+    console.error("Erro ao cadastrar cliente no banco:", error);
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ 
+      success: false, 
+      message: "Erro interno no servidor ao cadastrar cliente." 
+    });
+  }
+});
+
 module.exports = router;

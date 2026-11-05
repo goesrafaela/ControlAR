@@ -697,31 +697,6 @@ body:not(.admin-session) [data-admin-only="true"]{display:none!important}
 </section>
 
 
-<section class="v7-panel" id="gestao-v7">
-  <h2>Gestão operacional</h2>
-  <p class="v7-sub">Visão administrativa demonstrativa para acompanhar técnicos, clientes e distribuição das ordens de serviço.</p>
-  <div class="v7-kpis">
-    <div class="v7-kpi"><b>3</b><span>Técnicos ativos</span></div>
-    <div class="v7-kpi"><b>7</b><span>OS abertas</span></div>
-    <div class="v7-kpi"><b>3</b><span>Atendimentos hoje</span></div>
-    <div class="v7-kpi"><b>4</b><span>Manutenções próximas</span></div>
-  </div>
-  <div class="v7-cols">
-    <div class="v7-box">
-      <h3>Equipe técnica</h3>
-      <div class="v7-person"><div><strong>João Martins</strong><small>2 OS hoje • 1 em atendimento</small></div><button class="v7-btn" onclick="v7Tecnico('João Martins','OS #1057 – Clínica Vida|OS #1060 – Carlos Eduardo')">Acompanhar</button></div>
-      <div class="v7-person"><div><strong>Marcos Lima</strong><small>1 OS hoje • disponível</small></div><button class="v7-btn" onclick="v7Tecnico('Marcos Lima','OS #1061 – Mercado Central')">Acompanhar</button></div>
-      <div class="v7-person"><div><strong>Renato Alves</strong><small>2 OS programadas • disponível</small></div><button class="v7-btn" onclick="v7Tecnico('Renato Alves','OS #1062 – Ana Paula|OS #1063 – Escritório SP')">Acompanhar</button></div>
-    </div>
-    <div class="v7-box">
-      <h3>Clientes do dia</h3>
-      <div class="v7-person"><div><strong>Clínica Vida</strong><small>15:30 • Manutenção corretiva</small></div><button class="v7-btn alt" onclick="v7Cliente('Clínica Vida','Daikin EcoSwing • 18.000 BTUs','Recepção','João Martins','OS #1057')">Ver detalhes</button></div>
-      <div class="v7-person"><div><strong>Mercado Central</strong><small>11:00 • Preventiva</small></div><button class="v7-btn alt" onclick="v7Cliente('Mercado Central','Elgin Eco • 24.000 BTUs','Área de vendas','Marcos Lima','OS #1061')">Ver detalhes</button></div>
-      <div class="v7-person"><div><strong>Ana Paula</strong><small>09:00 • Higienização</small></div><button class="v7-btn alt" onclick="v7Cliente('Ana Paula','Split Inverter • 12.000 BTUs','Sala','Renato Alves','OS #1062')">Ver detalhes</button></div>
-    </div>
-  </div>
-</section>
-
 <div class="v7-modal" id="v7Modal" onclick="if(event.target===this)v7Close()">
  <div class="v7-modal-card">
    <h3 id="v7ModalTitle">Detalhes</h3>

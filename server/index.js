@@ -19,6 +19,9 @@ app.use('/api/admin', adminRoutes);
 const equipmentsRoutes = require('./src/routes/equipments');
 app.use('/api/equipments', equipmentsRoutes);
 
+const techRoutes = require('./src/routes/tech');
+app.use('/api/tech', techRoutes);
+
 app.use(express.static(path.join(__dirname, '..')));
 
 require('./src/db');
